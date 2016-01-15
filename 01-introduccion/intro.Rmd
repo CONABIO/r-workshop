@@ -1,0 +1,434 @@
+---
+title: "Introducción a R"
+author: "Teresa Ortiz"
+output: html_document
+---
+
+## Objetivos
+* Instalar [R](http://www.cran.r-project.org/) y [RStudio](http://www.rstudio.com/products/rstudio/download/)
+* Introducción al lenguaje y ambiente R
+* Visualización de datos
+* Transformación de datos
+
+## El ambiente y el lenguaje R
+##### ¿Qué es R?
+* R es un lenguaje de programación y un ambiente de cómputo estadístico
+* R es software libre (no dice qué puedes o no hacer con el software), de código 
+abierto (todo el código de R se puede inspeccionar - y se inspecciona).
+* Cuando instalamos R, instala la base de R. Mucha de la funcionalidad adicional 
+está en **paquetes** que la comunidad contribuye.
+
+##### ¿Cómo entender R?
+* Hay una sesión de R corriendo. La consola de R es la interfaz 
+entre R y nosotros. 
+* En la sesión hay objetos. Todo en R es un objeto: vectores, tablas, 
+ funciones, etc.
+* Operamos aplicando funciones a los objetos y creando nuevos objetos.
+
+##### ¿Por qué R?
+* R funciona en casi todas las plataformas (Mac, Windows, Linux e incluso en Playstation 3).
+* R es un lenguaje de programación completo, permite desarrollo de DSLs.
+* R promueve la investigación reproducible.
+* R está actualizado gracias a que tiene una activa comunidad. Solo en CRAN hay 
+cerca de 4000 paquetes.
+* R se puede combinar con otras herramientas.
+* R tiene capacidades gráficas muy sofisticadas.
+* R es popular ([la guerra del software](http://datacamp.wpengine.com/wp-content/uploads/2014/05/infograph.png)).
+
+
+#### Rstudio
+Un ambiente de desarrollo integrado para R: incluye una consola, un editor de texto y un conjunto de herramientas para administrar el espacio de trabajo cuando se 
+utiliza R. 
+
+Algunos _shortcuts_ útiles:
+
+**En el editor**  
+
+* command/ctrl + enter: enviar código a la consola  
+* ctrl + 2: mover el cursor a la consola
+
+**En la consola**  
+
+* flecha hacia arriba: recuperar comandos pasados  
+* ctrl + flecha hacia arriba: búsqueda en los comandos  
+* ctrl + 1: mover el cursor al editor  
+
+***
+
+### _Software_ estadístico
+* Operaciones vectorizadas
+* _Data_ _frames_
+* Indexar
+* Valores faltantes
+* Ambiente interactivo
+
+#### Operaciones vectorizadas
+Cuando tenemos vectores de diferente dimensión R _recicla_, esto es, expande
+el argumento de menor longitud para igualar al de mayor longitud
+```{r}
+1:10 * 2
+1:10 * 1:5
+```
+
+#### _Data_ _frames_
+Los _data_ _frames_ son estructuras rectangulares donde cada columna es del 
+mismo tipo (e.g. categórica o factor, numérica, caracter) pero columnas 
+distintas pueden tener diferentes tipos.
+```{r}
+library(ggplot2)
+head(diamonds)
+str(diamonds)
+```
+
+Veamos un diagrama de diferentes estructuras de datos.
+
+<img src="imagenes/data_structures.png" width="250px"  />
+
+#### Indexar
+Para lograr una programación eficiente en R es importante conocer las técnicas 
+de indexar
+```{r}
+diamonds[1:5, ]
+diamonds[diamonds$x == diamonds$y, ]
+diamonds[-(1:53929), c("carat", "price")]
+```
+
+#### Datos faltantes
+¿Qué regresan las siguientes expresiones?
+```{r, eval = FALSE}
+5 + NA
+NA / 2
+sum(c(5, NA))
+mean(c(5, NA))
+NA < 3
+NA == 3
+NA == NA
+```
+
+El manejo de datos faltantes en R utiliza una lógica ternaria (como SQL)
+```{r}
+NA == NA
+is.na(NA)
+```
+El default en R es propagar los valores faltantes; sin embargo, muchas funciones
+tienen un argumento _na.rm_ para removerlos
+```{r}
+sum(c(5, NA), na.rm = TRUE)
+mean(c(5, NA), na.rm = TRUE)
+```
+
+#### Ambiente interactivo
+* Documentación y ayuda `?mean` o `help()`
+* Las heurísticas minimizan las salidas cuando prefieres no verlas
+```{r}
+a <- 10
+a
+(a <- 15)
+```
+* Herramientas sencillas y flexibles para graficación
+```{r, fig.width = 5, fig.height = 4}
+qplot(carat, price, data = diamonds, colour = clarity)
+```
+
+***
+
+### Lenguaje de programación
+
+#### Funciones y reglas de búsqueda lexica (lexical scoping rules)
+Las funciones son una base importante de la programación en R. Veamos un ejemplo:
+```{r}
+wtd_mean <- function(x, wt = rep(1, length(x))) {
+  sum(x * wt) / sum(wt)
+}
+wtd_mean(1:10)
+wtd_mean(1:10, 10:1)
+```
+Las funciones de R tienen tres partes:
+
+1. El cuerpo, el código dentro de la función
+```{r}
+body(wtd_mean)
+```
+2. Los formales, la lista de argumentos que controlan como puedes llamar a la
+función
+```{r}
+formals(wtd_mean)
+```
+2. El ambiente, el _mapeo_ de la ubicación de las variables de la función
+```{r}
+environment(wtd_mean)
+environment(qplot)
+```
+Veamos mas ejemplos, ¿qué regresan las siguientes funciones?
+```{r}
+# 1
+x <- 5
+f <- function(){
+  y <- 10
+  c(x = x, y = y) 
+}
+rm(x, f)
+
+# 2
+x <- 5
+g <- function(){
+  x <- 20
+  y <- 10
+  c(x = x, y = y)
+}
+
+# 3
+x <- 5
+h <- function(){
+  y <- 10
+  i <- function(){
+    z <- 20
+    c(x = x, y = y, z = z)
+  }
+  i() 
+}
+
+# 4 ¿qué ocurre si la corremos por segunda vez?
+j <- function(){
+  if (!exists("a")){
+    a <- 5
+  } else{
+    a <- a + 1 
+}
+  print(a) 
+}
+x <- 0
+y <- 10
+
+# 5 ¿qué regresa k()? ¿y k()()?
+k <- function(){
+  x <- 1
+  function(){
+    y <- 2
+    x + y 
+  }
+}
+```
+
+#### Reglas de búsqueda
+
+Las reglas de búsqueda determinan como se busca el valor de una variable libre en 
+una función. A nivel lenguaje R usa _lexical scoping_, una alternativa es 
+_dynamic scoping_. En R (_lexical scoping_) los valores de los símbolos se basan en como se anidan las funciones cuando fueron creadas y no en como son llamadas. Esto es, en R no importa como son las llamadas a una función para saber como se va a
+buscar el valor de una variable. Una consecuencia de las reglas de búsqueda es que todos los objetos deben ser guardados en memoria.
+
+
+> ### Recursos
+* Buscar ayuda: Google, [StackOverflow](http://stackoverflow.com/questions/tagged/r), 
+[seekR](http://seekr.international). Para aprender más sobre un paquete o una función pueden visitar [Rdocumentation.org](http://www.rdocumentation.org/).
+* Para aprender los comandos básicos de R [*Try R*](http://tryr.codeschool.com/) y 
+[Datacamp](https://www.datacamp.com/) cuentan con excelentes cursos interactivos.
+* Para aprender programación avanzada en R, el libro gratuito [Advanced R](http://adv-r.had.co.nz) de Hadley Wickham es una buena referencia. En particular es conveniente leer la [guía de estilo](http://adv-r.had.co.nz/Style.html) (para todos: principiantes, intermedios y avanzados). 
+* Para mantenerse al tanto de las noticias de la comunidad de R pueden visitar [R-bloggers](http://www.r-bloggers.com).
+* Para entretenerse en una tarde domingo pueden navegar los reportes en [RPubs](https://rpubs.com).
+* [Lista de paquetes y recursos] (https://github.com/qinwf/awesome-R#integrated-development-environment)
+
+<!-- Otros: [la guerra del software](http://datacamp.wpengine.com/wp-content/uploads/2014/05/infograph.png) -->
+
+  
+* * *
+
+## Visualización
+Utilizaremos el paquete ggplot2 y cubriremos los siguientes puntos:
+* Gráfica de dispersión
+* Páneles
+* Distintos tipos de gráficas
+
+#### Gráficas de dispersión
+
+```{r}
+# install.packages("ggplot2") # sólo se hace una vez
+library(ggplot2) # Cargamos el paquete en nuestra sesión
+bnames <- read.csv("data/bnames.csv") # cargar datos
+```
+Veamos los datos 
+```{r}
+?mpg
+head(mpg)
+str(mpg)
+summary(mpg)
+```
+
+Notemos que debemos especificar explicitamente que base de datos usamos, este 
+es el primer argumento en la función ggplot.
+```{r, fig.width = 5, fig.height = 4}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point()
+```
+
+Podemos representar variables adicionales usando otras características estéticas 
+(*_aesthetics_*) como forma, color o tamaño.
+```{r, fig.width = 5.5, fig.height = 4}
+ggplot(mpg, aes(x = displ, y = hwy, color = class)) + 
+  geom_point()
+```
+
+![](imagenes/manicule2.jpg) Experimenta con los _aesthetics_ color (color), 
+tamaño (size) y forma (shape).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ¿Qué diferencia hay entre las variables 
+categóricas y las continuas?
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ¿Qué ocurre cuando combinas varios _aesthetics_?
+
+El mapeo de las propiedades estéticas es como sigue:
+
+&nbsp;    |Discreta      |Continua
+----------|--------------|---------
+Color     |Arcoiris de colores         |Gradiente de colores
+Tamaño    |Escala discreta de tamaños  |Mapeo lineal entre el radio y el valor
+Forma     |Distintas formas            |No aplica
+
+Los *_geoms_* controlan el tipo de gráfica
+```{r, fig.width = 5, fig.height = 4}
+p <- ggplot(mpg, aes(x = displ, y = hwy))
+p + geom_line() # en este caso no es una buena gráfica
+```
+
+¿Qué problema tiene la siguiente gráfica?
+```{r, fig.width = 5, fig.height = 4}
+p <- ggplot(mpg, aes(x = cty, y = hwy))
+p + geom_point() 
+p + geom_jitter() 
+```
+
+![](imagenes/manicule2.jpg) ¿Cómo podemos mejorar la siguiente gráfica?
+```{r, fig.width = 5, fig.height = 4}
+ggplot(mpg, aes(x = class, y = hwy)) + 
+  geom_point() 
+```
+
+Intentemos reodenar los niveles de la variable clase
+```{r, fig.width = 5, fig.height = 4}
+ggplot(mpg, aes(x = reorder(class, hwy), y = hwy)) + 
+    geom_point() 
+```
+
+Podemos probar otros geoms.
+```{r, fig.width = 5, fig.height = 4}
+ggplot(mpg, aes(x = reorder(class, hwy), y = hwy)) + 
+    geom_jitter() 
+ggplot(mpg, aes(x = reorder(class, hwy), y = hwy)) + 
+    geom_boxplot() 
+```
+
+También podemos usar más de un geom!
+```{r, fig.width = 5, fig.height = 3.5}
+ggplot(mpg, aes(x = reorder(class, hwy), y = hwy)) + 
+    geom_jitter() +
+    geom_boxplot()
+```
+
+![](imagenes/manicule2.jpg) Lee la ayuda de _reorder_ y repite las gráficas 
+anteriores ordenando por la mediana de _hwy_.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ¿Cómo harías
+para graficar los puntos encima de las cajas de boxplot?
+
+Veamos ahora como hacer páneles de gráficas, la idea es hacer varios múltiplos de 
+una gráfica donde cada múltiplo representa un subconjunto de los datos, es una 
+práctica muy útil para explorar relaciones condicionales.
+
+En ggplot podemos usar _facet\_wrap()_ para hacer paneles dividiendo los datos 
+de acuerdo a las categorías de una sola variable
+```{r, fig.width = 5, fig.height = 5}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_jitter() +
+  facet_wrap(~ cyl)
+```
+
+También podemos hacer una cuadrícula de 2 dimensiones usando 
+_facet\_grid(filas~columnas)_ 
+
+```{r, fig.width = 8, fig.height = 2.5}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_jitter() +
+  facet_grid(.~ class)
+```
+```{r, fig.width = 7, fig.height = 5}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_jitter() +
+  facet_grid(drv ~ class)
+```
+
+Los páneles pueden ser muy útiles para entender relaciones en nuestros datos. En 
+la siguiente gráfica es difícil entender si existe una relación entre radiación
+solar y ozono
+```{r, fig.width = 4, fig.height = 3}
+data(airquality)
+ggplot(airquality, aes(x = Solar.R, y = Ozone)) + 
+  geom_point() 
+```
+
+Veamos que ocurre si realizamos páneles separando por velocidad del viento
+```{r, fig.width = 7, fig.height = 3, message = FALSE, warning = FALSE}
+library(Hmisc)
+airquality$Wind.cat <- cut2(airquality$Wind, g = 3) 
+ggplot(airquality, aes(x = Solar.R, y = Ozone)) + 
+  geom_point() +
+  facet_wrap(~ Wind.cat)
+```
+
+Podemos agregar un suavizador (loess) para ver mejor la relación de las 
+variables en cada panel.
+```{r, fig.width = 7, fig.height = 3, warning = FALSE}
+ggplot(airquality, aes(x = Solar.R, y = Ozone)) + 
+  geom_point() +
+  facet_wrap(~ Wind.cat) + 
+  geom_smooth(span = 3)
+```
+
+![](imagenes/manicule2.jpg) Escribe algunas preguntas que puedan contestar con estos datos.
+
+En ocasiones es necesario realizar transformaciones u obtener subconjuntos de los 
+datos para poder responder preguntas de nuestro interés, por ejemplo, la base de 
+datos que cargamos al inicio de esta sección (bnames) contiene los 1000 nombres 
+de niña y niño mas populares en EUA entre 1880 y 2008.
+```{r}
+head(bnames)
+```
+
+Supongamos que queremos ver la tendencia del nombre "John", para ello debemos 
+generar un subconjunto de la base de datos.
+```{r,  fig.width = 5, fig.height = 3}
+bnames_John <- bnames[bnames$name == "John", ]
+ggplot(bnames_John, aes(x = year, y = percent)) +
+  geom_point()
+```
+```{r,  fig.width = 5, fig.height = 3.7}
+ggplot(bnames_John, aes(x = year, y = percent, color = sex)) +
+  geom_line()
+```
+
+La preparación de los datos es un aspecto muy importante del análisis y suele ser
+la fase que lleva más tiempo. Es por ello que el siguiente tema se enfocará en 
+herramientas para hacer transformaciones de manera eficiente.
+
+
+
+> Para aprender más de ggplot pueden ver la documentación con ejemplos en la página de [ggplot2](http://docs.ggplot2.org/current/).
+
+![](imagenes/manicule.jpg) Tarea. Explora la base de datos msleep, estos datos están 
+incluidos en el paquete ggplot2 para acceder a ellos basta con cargar el paquete:
+```{r}
+library(ggplot2)
+head(msleep)
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; realiza al menos 3 gráficas y explica las relaciones que encuentres. Al menos una de las gráficas debe ser de páneles, si lo consideras interesante, puedes crear una variable categórica utilizando la función cut2 del paquete Hmisc. 
+
+
+**VER: https://github.com/dgrapov/TeachingDemos/blob/master/Demos/dplyr/hands_on_with_dplyr.md?utm_content=bufferc128f&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer**
+
+
+
+
+
+
+
+
