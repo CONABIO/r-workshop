@@ -1,7 +1,7 @@
 # Curso Introductorio de R para CONABIO
 
 A impartirse del 2 al 8 de febrero de 2016 en la Sala Anexo (CONABIO). Instructores y organizadores Alejandro Ponce, 
-Alicia Mastretta, [Amaury Gutiérrez](agutierrez@conabio.gob.mx), Fernando Pardo, Julián Equihua, Mariana Munguía y [Teresa Ortiz](teresa.ortiz.manceragmail.com).
+Alicia Mastretta, Amaury Gutiérrez, Fernando Pardo, Julián Equihua, Mariana Munguía y Teresa Ortiz.
 
 | Nombre           | Correo                             |
 | -------------    |:----------------------------------:|
