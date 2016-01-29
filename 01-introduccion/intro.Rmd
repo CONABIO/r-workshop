@@ -301,9 +301,9 @@ También podemos guardar *objetos* creados en R usando
 
 ```{r}
 mi_vector <- c('uno','dos','tres')
-save(mi_vector, file = 'vector_uno.Rdata')
+save(mi_vector, file = 'vector_uno.RData')
 rm('mi_vector')
-load('vector_uno.Rdata')
+load('vector_uno.RData')
 mi_vector
 ```
 
@@ -311,8 +311,8 @@ Nótese que se guarda el objeto con su nombre. Si quieres guardar solamente el
 objeto,
 
 ```{r}
-saveRDS(mi_vector, file ='vector_dos.Rdata')
-nuevo_vector <- readRDS(file = 'vector_dos.Rdata')
+saveRDS(mi_vector, file ='vector_dos.RData')
+nuevo_vector <- readRDS(file = 'vector_dos.RData')
 nuevo_vector
 ```
 
@@ -542,4 +542,4 @@ variable categórica utilizando la función cut2 del paquete Hmisc.
 * [Lista de paquetes y recursos](https://github.com/qinwf/awesome-R#integrated-development-environment)
 * Para aprender más de ggplot pueden ver la documentación con ejemplos en la 
 página de [ggplot2](http://docs.ggplot2.org/current/).
-* Otro recurso muy útil es el [acordeón de ggplot](https://www.rstudio.com/wp-content/uploads/2015/04/ggplot2-spanish.pdf)
+* Otro recurso muy útil es el [acordeón de ggplot](https://www.rstudio.com/wp-content/uploads/2015/04/ggplot2-spanish.pdf).
