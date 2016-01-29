@@ -10,7 +10,7 @@ Alicia Mastretta, Amaury Gutiérrez, Fernando Pardo, Julián Equihua, Mariana Mu
 | Fernando Pardo   | are neat                           |
 | Julián Equihua   |                                    |
 | Mariana Munguía  |                                    | 
-| Teresa Ortiz     | teresa.ortiz.manceragmail.com      |
+| Teresa Ortiz     | teresa.ortiz.mancera@gmail.com     |
              
 ## Temario
 
