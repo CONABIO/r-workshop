@@ -7,10 +7,10 @@ output:
     theme: spacelab
 ---
 
-Este es el primer de 3 juegos de notas introductorias a R, con un enfoque en 
+Este es el primer de 2 juegos de notas introductorias a R, con un enfoque en 
 análisis de datos. A diferencia de otros recursos, no se pretende dar una 
 introducción general a R sino mostrar las herramientas más importantes para 
-comenzar a utilizar R en análisis de datos. En este juego particular se cubren 
+comenzar a utilizar R en análisis de datos. En este primer juego se cubren 
 la introducción a R y la sección de visualización. Más adelante aprenderemos a 
 usar R para manipulación de datos y modelación. Las notas están ordenadas como 
 sigue:
@@ -268,6 +268,16 @@ cual es nuestro directorio de trabajo, para esto ejecutamos:
 ```{r}
 getwd()
 ```
+
+También es posible leer bases de datos usando el url.
+
+```{r}
+# datos de abulón (sexo, longitud, diámetro, altura, peso, ...)
+# Fuente https://archive.ics.uci.edu/ml/datasets/Abalone
+abalone <- read_csv("https://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data", col_names = FALSE)
+str(abalone)
+```
+
 
 En caso de que se quieran leer hojas de excel se recomienda el paquete *readxl*.
 
