@@ -3,6 +3,15 @@
 A impartirse del 2 al 8 de febrero de 2016 en la Sala Anexo (CONABIO). Instructores y organizadores Alejandro Ponce, 
 Alicia Mastretta, [Amaury Gutiérrez](agutierrez@conabio.gob.mx), Fernando Pardo, Julián Equihua, Mariana Munguía y [Teresa Ortiz](teresa.ortiz.manceragmail.com).
 
+| Nombre           | Correo                             |
+| -------------    |:----------------------------------:|
+| Alicia Mastretta |                                    |
+| Amaury Gutiérrez | agutierrez@conabio.gob.mx          |
+| Fernando Pardo   | are neat                           |
+| Julián Equihua   |                                    |
+| Mariana Munguía  |                                    | 
+| Teresa Ortiz     | teresa.ortiz.manceragmail.com      |
+             
 ## Temario
 
 #### 01-Introducción (martes 2 de 11:15 a 14:15 hrs por Teresa y Alicia)
