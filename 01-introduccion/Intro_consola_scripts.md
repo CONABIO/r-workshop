@@ -16,7 +16,7 @@ La consola se distingue por tener el símbolo `>` seguido de un cursor parpadean
 
 Tu Consola debe verse más o menos así después del ejemplo anterior:
 
-![Consola](Consola.png)
+![Consola](Consola.PNG)
 
 
 ## Scripts
@@ -51,12 +51,12 @@ Para que la computadora distinga entre el código y los comentarios para humanos
 
 Un script muy sencillo podría verse así:
 
-![Script](Script.png)
+![Script](Script.PNG)
 
 
 "Ejemplo_script.R" es el nombre del archivo, es decir, que este texto es un **archivo de texto** (con terminación .R en vez de .txt) que vive en mi computadora.
 
-![dondeEjemplo_script](dondeEjemplo_script.png)
+![dondeEjemplo_script](dondeEjemplo_script.PNG)
 
 ## Importancia de los scripts
 
