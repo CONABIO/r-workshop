@@ -5,7 +5,7 @@ A impartirse del 2 al 8 de febrero de 2016 en la Sala Anexo (CONABIO). Instructo
 | Nombre           | Correo                                         |
 | -------------    |:----------------------------------------------:|
 | Alejandro Ponce  |                                                |
-| Alicia Mastretta |                                                |
+| Alicia Mastretta | amastretta@conabio.gob.mx                                               |
 | Amaury Gutiérrez | agutierrez@conabio.gob.mx                      |
 | Fernando Pardo   |                                                |
 | Julián Equihua   |                                                |
