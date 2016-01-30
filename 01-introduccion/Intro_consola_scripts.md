@@ -1,12 +1,3 @@
----
-title: "Introducción a la Consola y los Scripts en R"
-author: "Teresa Ortiz, Alicia Mastretta-Yanes"
-date: "Febrero 2016"
-output:
-  html_document:
-    theme: spacelab
----
-
 # Introducción a la Consola y a los Scripts en R
 
 ## La Consola
@@ -59,6 +50,7 @@ Para que la computadora distinga entre el código y los comentarios para humanos
 
 
 Un script muy sencillo podría verse así:
+
 ![Script](Script.png)
 
 
