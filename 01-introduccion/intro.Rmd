@@ -546,6 +546,7 @@ variable categórica utilizando la función cut2 del paquete Hmisc.
 [seekR](http://seekr.international). Para aprender más sobre un paquete o una función pueden visitar [Rdocumentation.org](http://www.rdocumentation.org/).
 * Para aprender los comandos básicos de R [*Try R*](http://tryr.codeschool.com/) y 
 [Datacamp](https://www.datacamp.com/) cuentan con excelentes cursos interactivos.
+* Referencia de bolsillo a principales comandos de R: [R Reference Card](https://cran.r-project.org/doc/contrib/Short-refcard.pdf)
 * Para aprender programación avanzada en R, el libro gratuito [Advanced R](http://adv-r.had.co.nz) de Hadley Wickham es una buena referencia. En particular es conveniente leer la [guía de estilo](http://adv-r.had.co.nz/Style.html) (para todos: principiantes, intermedios y avanzados). 
 * Para mantenerse al tanto de las noticias de la comunidad de R pueden visitar [R-bloggers](http://www.r-bloggers.com).
 * Para entretenerse en una tarde domingo pueden navegar los reportes en [RPubs](https://rpubs.com).
