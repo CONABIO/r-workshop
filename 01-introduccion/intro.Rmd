@@ -196,13 +196,20 @@ de indexar data frames:
 diamonds[1:5, ]
 # extraemos los primeros cinco renglones y las columnas 2,4,6
 diamonds[1:5, c(2, 4, 6)]
+# también podemos extraer columnase usando $: extraemos la columna x
+head(diamonds$x)
+```
+
+```{r}
 # ¿Que extraemos con las siguientes 2 instrucciones?
 diamonds[diamonds$x == diamonds$y, ]
 diamonds[-(1:53929), c("carat", "price")]
 ```
 
+como vemos arriba para indexar los data frames tenemos que indicar filas y columnas, en el lado izquierdo de los corchetes se indica (con un vector) que filas queremos extraer, y en el lado derecho se indican las columnas: `diamonds[filas, columnas]`. También vale la pena notar que `diamonds$x` regresa la columna x como vector, es decir, `diamonds$x` es de una sola dimensión.
+
 ### Datos faltantes
-Los datos faltantes se expresan como `NA`, ¿qué regresan las siguientes expresiones?
+En R los datos faltantes se expresan como `NA`, ¿qué regresan las siguientes expresiones?
 
 ```{r, eval = FALSE}
 5 + NA
@@ -319,8 +326,11 @@ nuevo_vector
 ## Visualización 
 
 Utilizaremos el paquete ggplot2 y cubriremos los siguientes puntos:  
+
 * Gráfica de dispersión  
+
 * Páneles  
+
 * Distintos tipos de gráficas  
 
 #### Gráficas de dispersión
