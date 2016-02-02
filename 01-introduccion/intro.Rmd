@@ -12,7 +12,8 @@ análisis de datos. A diferencia de otros recursos, no se pretende dar una
 introducción general a R sino mostrar las herramientas más importantes para 
 comenzar a utilizar R en análisis de datos. En este primer juego se cubren 
 la introducción a R y la sección de visualización. Más adelante aprenderemos a 
-usar R para manipulación de datos y modelación. Las notas están ordenadas como 
+usar R para manipulación de datos y modelación. Estas notas siguen material e 
+ideas de [Hadley Wickham](http://had.co.nz) Las notas están ordenadas como 
 sigue:
 
 * El ambiente y el lenguaje R  
