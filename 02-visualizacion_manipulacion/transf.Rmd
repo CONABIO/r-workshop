@@ -889,7 +889,7 @@ La idea detras de las expresiones regulares es poder parsear archivos de texto o
 
 ### Expresiones regulares en R
 
-Las expresiones regulares son independientes del lenguaje R, existe una implementación para prácticamente cualquier lenguaje de programación. En lo que nos compete en este curso, veremos los principales usos que se le pueden dar en la plataforma de interés. Para ejemplificar el uso de expresiones regulares en el lenguaje R se usarán datos procedentes de la siguiente página (homicides)[http://data.baltimoresun.com/news/police/homicides]
+Las expresiones regulares son independientes del lenguaje R, existe una implementación para prácticamente cualquier lenguaje de programación. En lo que nos compete en este curso, veremos los principales usos que se le pueden dar en la plataforma de interés. Para ejemplificar el uso de expresiones regulares en el lenguaje R se usarán datos procedentes de la siguiente página [homicides](http://data.baltimoresun.com/news/police/homicides)
 
 ```{r}
 homicides <- readLines("data/homicides.txt")
