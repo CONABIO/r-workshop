@@ -1020,9 +1020,9 @@ dates <- as.Date(dates, "%B %d, %Y")
 hist(dates, "year", freq = TRUE)
 ```
 
-![Wait, forgot to escape a space.  Wheeeeee\[taptaptap\]eeeeee.][http://imgs.xkcd.com/comics/regular_expressions.png]
+![Wait, forgot to escape a space.  Wheeeeee\[taptaptap\]eeeeee.](http://imgs.xkcd.com/comics/regular_expressions.png)
 
-Las expresiones regulares son una herramienta poderosa cuando se usa sabiamente
+
 
 ### Recursos adicionales
 
