@@ -163,6 +163,7 @@ que hay varias maneras de determinarlas.
 ```{r}
 # cargamos el paquete
 library(tidyr) 
+library("dplyr")
 pew_tidy <- gather(data = pew, income, frequency, -religion)
 # vemos las primeras líneas de nuestros datos alargados 
 head(pew_tidy) 
@@ -222,7 +223,7 @@ que una canción entra por primera vez al top 100 de Billboard.
 
 ```{r}
 library(readr)
-billboard <- read_csv("data/billboard.csv")
+billboard <- read.csv("data/billboard.csv")
 billboard
 ```
 
@@ -299,7 +300,7 @@ debemos pasar a la función `separate`, esta recibe como parámetros:
 * el nombre de la variable que deseamos separar en más de una,  
 
 * la posición de donde deseamos "cortar" (hay más opciones para especificar 
-como separar, ver `?separate`.
+como separar, ver `?separate`)
 
 ```{r}
 tb_tidy <- separate(tb_long, demo, c("sex", "age"), 8)
@@ -458,7 +459,7 @@ atípicos.
 Muchos problemas de análisis de datos involucran la aplicación de la estrategia
 divide-aplica-combina, ([Hadley Whickam, 2011](http://www.jstatsoft.org/v40/i01/paper)) 
 esta consiste en romper un problema en pedazos (de 
-acuerdo a una variable de interés), operar sobre cada subcomjunto de manera
+acuerdo a una variable de interés), operar sobre cada subconjunto de manera
 independiente (ej. calcular la media de cada grupo, ordenar observaciones por 
 grupo, estandarizar por grupo) y después unir los pedazos nuevamente. El 
 siguiente diagrama ejemplifiaca el paradigma de divide-aplica-combina:
@@ -858,6 +859,9 @@ models[[1]]
 coef_list <- lapply(models, coef)
 head(do.call(rbind, coef_list))
 ```
+
+
+### Expresiones regulares
 
 
 ### Recursos adicionales
