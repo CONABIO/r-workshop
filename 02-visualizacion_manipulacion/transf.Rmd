@@ -855,32 +855,32 @@ head(do.call(rbind, coef_list))
 
 
 ### Expresiones regulares
-Las expresiones regulares son patrones que se usan para encontrar determinas combinaciones de caracteres en un orden específico. La idea detras de las expresiones regulares es poder analizar gramaticalmente archivos de texto o texto en general. En nuestro contexto lo que buscamos es la extracción de datos de fuentes de texto diversas. Una expresión regular se puede pensar como una combinación de caracteres literales y meta caracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado.
+Las expresiones regulares son patrones que se usan para encontrar determinadas combinaciones de caracteres en un orden específico. La idea detras de las expresiones regulares es poder analizar gramáticalmente archivos de texto o texto en general. En nuestro contexto lo que buscamos es la extracción de datos de fuentes de texto diversas. Una expresión regular se puede pensar como una combinación de caracteres literales y metacaracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado. Los metacaracteres son aquellos que tienen una función particular en la expresión regular.
 
 * literales: "c",""o","n","a","b","i","o","2","0","6"
 * metacaracteres: "*","?",".","|","^","$","(",")","[","]"
 
 #### Operadores
 
-* .: Cualquier símbolo
-* [....]: Lista de caracteres, por ejemplo [Bb]iology10[1234] acepta cualquiera de las cadenas "Biology102", "biology101"
-* \: Sirve para usar los metacaracteres como caracteres literales ($ * + . ? [ ] ^ { } | ( ) \), por ejemplo 10\^3 va aceptar la cadena "10^3"
-* |: Operador "or" acepta un patrón u otro, por ejemplo p(err|at)o va a aceptar tanto "perro" como "pato"
-* (....): Grupos, sirven para recuperar partes del patrón encontrado para ser usadas después (se verá con ejemplo)
+* *.* : Cualquier símbolo
+* *[....]* : Lista de caracteres, por ejemplo [Bb]iology10[1234] acepta cualquiera de las cadenas "Biology102", "biology101"
+* *\\* : Sirve para usar los metacaracteres como caracteres literales ($ * + . ? [ ] ^ { } | ( ) \), por ejemplo 10\^3 va aceptar la cadena "10^3"
+* *|* : Operador "or" acepta un patrón u otro, por ejemplo p(err|at)o va a aceptar tanto "perro" como "pato"
+* *(....)* : Grupos, sirven para recuperar partes del patrón encontrado para ser usadas después (se verá con ejemplo)
 
 #### Cuantificadores
 
-* \*: Cero o más ocurrencias del caracter anterior, por ejemplo 10\*, va a aceptar las cadenas "1", "10", "100", "1000", etc
-* +: Una o más ocurrencias del caracter anterior, por ejemplo 10+, va a aceptar las cadenas 10", "100", "1000", etc, pero no la cadena "1"
-* ?: Hasta una ocurrencia del caracter anterior, por ejemplo patos?, va aveptar las cadenas "pato" y "patos"
-* {n}: Exactamente n veces el caracter anterior, por ejemplo 10{5}, únicamente va a aceptar la cadena "100000"
-* {n,}: Mínimo n veces el caracter anterior, por ejemplo 10{5,}, aceptará las cadenas "100000", "1000000", "1000000", etc
-* {n,m}: Entre n y m veces el caracter anterior, por ejemplo 10{2,5}, aceptará las cadenas "100", "10000"
+* *\** : Cero o más ocurrencias del caracter anterior, por ejemplo 10\*, va a aceptar las cadenas "1", "10", "100", "1000", etc
+* *+* : Una o más ocurrencias del caracter anterior, por ejemplo 10+, va a aceptar las cadenas 10", "100", "1000", etc, pero no la cadena "1"
+* *?* : Hasta una ocurrencia del caracter anterior, por ejemplo patos?, va aveptar las cadenas "pato" y "patos"
+* *{n}* : Exactamente n veces el caracter anterior, por ejemplo 10{5}, únicamente va a aceptar la cadena "100000"
+* *{n,}* : Mínimo n veces el caracter anterior, por ejemplo 10{5,}, aceptará las cadenas "100000", "1000000", "1000000", etc
+* *{n,m}* : Entre n y m veces el caracter anterior, por ejemplo 10{2,5}, aceptará las cadenas "100", "10000"
 
 #### Posicionadores
 
-* ^: Inicio de la cadena, por ejemplo ^GAAA aceptará "GAAACCCTTT", pero no "CCCTGAAAC"
-* $: Fin de la cadena, por ejemplo TCCA$ aceptará "ACTTCCA" pero no "AGTCCATC"
+* *^* : Inicio de la cadena, por ejemplo ^GAAA aceptará "GAAACCCTTT", pero no "CCCTGAAAC"
+* *$* : Fin de la cadena, por ejemplo TCCA$ aceptará "ACTTCCA" pero no "AGTCCATC"
 
 ### Expresiones regulares en R
 
