@@ -863,6 +863,137 @@ head(do.call(rbind, coef_list))
 
 ### Expresiones regulares
 
+La expresiones regulares no son solo de R.
+
+La idea detras de las expresiones regulares es poder parsear archivos de texto o texto en general. En nuestro contexto lo que buscamos es extraer datos de fuentes de texto diversas. Una expresion regular se puede pensar como una combinación de caracteres literales y meta caracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado.
+
+* literales: "c",""o","n","a","b","i","o"
+* metacaracteres: "*","?",".","|","^","$"
+
+#### Operadores
+
+* .: Cualquier simbolo
+* [....]: Lista de caracteres, por ejemplo [Bb]iology10[1234] acepta cualquiera de las cadenas "Biology102", "biology101"
+* \: Sirve para usar los metacaracteres como caracteres literales ($ * + . ? [ ] ^ { } | ( ) \), por ejemplo 10\^3 va aceptar la cadena "10^3"
+* |: Operador "or" acepta un patron u otro, por ejemplo p(err|at)o va a aceptar tanto "perro" como "pato"
+* (....): Grupos, sirven para recuperar partes del patrón encontrado para ser usadas después (se verá con ejemplo)
+
+#### Cuantificadores
+
+* *: Cero o más ocurrencias del caracter anterior, por ejemplo 10*, va a aceptar las cadenas "1", "10", "100", "1000", etc
+* +: Una o más ocurrencias del caracter anterior, por ejemplo 10+, va a aceptar las cadenas 10", "100", "1000", etc, pero no la cadena "1"
+* ?: Hasta una ocurrencia del caracter anterior, por ejemplo patos?, va aveptar las cadenas "pato" y "patos"
+* {n}: Exactamente n veces el caracter anterior, por ejemplo 10{5}, únicamente va a aceptar la cadena "100000"
+* {n,}: Mínimo n veces el caracter anterior, por ejemplo 10{5,}, aceptará las cadenas "100000", "1000000", "1000000", etc
+* {n,m}: Entre n y m veces el caracter anterior, por ejemplo 10{2,5}, aceptará las cadenas "100", "10000"
+
+### Expresiones regulares en R
+
+Las expresiones regulares son independientes del lenguaje R, existe una implementación para prácticamente cualquier lenguaje de programación. En lo que nos compete en este curso, veremos los principales usos que se le pueden dar en la plataforma de interés. Para ejemplificar el uso de expresiones regulares en el lenguaje R se usarán datos procedentes de la siguiente página (homicides)[http://data.baltimoresun.com/news/police/homicides]
+
+```{r}
+homicides <- readLines("data/homicides.txt")
+head(homicides)
+```
+
+Podemos ver la naturaleza en la que vienen los datos.
+
+```{r}
+homicides[1]
+homicides[1000]
+```
+
+#### grep, grepl
+
+
+Jugando con la función grep podemos obtener el número de homicidios:
+
+```{r}
+length(grep("iconHomicideShooting", homicides))
+length(grep("iconHomicideShooting|icon_homicide_shooting", homicides))
+```
+
+Usando otra sección de la información obtenemos:
+
+```{r}
+length(grep("Cause: shooting", homicides))
+length(grep("Cause: [Ss]hooting", homicides))
+```
+```{r}
+length(grep("[Ss]hooting", homicides))
+i <- grep("[cC]ause: [sS]hooting", homicides)
+j <- grep("[sS]hooting", homicides)
+str(i)
+str(j)
+setdiff(i, j)
+setdiff(j, i)
+```
+
+Analizando el resultado, vemos cual es la razón de dicha diferencia:
+
+```{r}
+homicides[859]
+```
+
+Así como podemos obtener los indices de las ocurrencias del patrón de interés, también podemos obtener los valores directamente, o un vector booleano con las incidencias (verdadero o falso) del patrón dentro de nuestro vector de cadenas.
+
+```{r}
+state.name
+grep("^New", state.name)
+grep("^New", state.name, value =TRUE)
+grepl("^New", state.name)
+```
+
+#### regexpr, regmatches
+
+```{r}
+homicides[1]
+regexpr("<dd>[F|f]ound.*</dd>", homicides[1:5])
+substr(homicides[1], 177, 177 + 93 -1)
+regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
+substr(homicides[1], 177, 177 + 33 -1)
+r <- regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
+regmatches(homicides[1:5], r)
+x <- substr(homicides[1], 177, 177 + 33 -1)
+x
+```
+
+#### sub, gsub
+
+```{r}
+sub("<dd>[F|f]ound on |</dd>", "", x)
+gsub("<dd>[F|f]ound on |</dd>", "", x)
+r <- regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
+regmatches(homicides[1:5], r)
+m <-regmatches(homicides[1:5], r)
+gsub("<dd>[F|f]ound on |</dd>", "", m)
+d <- gsub("<dd>[F|f]ound on |</dd>", "", m)
+as.Date(d, "%B %d, %Y")
+```
+
+#### regexec
+
+```{r}
+regexec("<dd>[F|f]ound on (.*?)</dd>", homicides[1:5])
+regexec("<dd>[F|f]ound on .*?</dd>", homicides[1:5])
+substr(homicides[1:5], 177, 177 + 93 -1)
+substr(homicides[1:5], 177, 177 + 33 -1)
+substr(homicides[1:5], 190, 190 + 15 -1)
+r <- regexec("<dd>[F|f]ound on (.*?)</dd>", homicides[1:5])
+regmatches(homicides[1:5], r)
+```
+
+#### Todo junto
+
+```{r}
+r <- regexec("<dd>[F|f]ound on (.*?)</dd>", homicides)
+m <- regmatches(homicides, r)
+dates <- sapply(m, function(x) x[2])
+dates <- as.Date(dates, "%B %d, %Y")
+hist(dates, "month", freq = TRUE)
+```
+
+
 
 ### Recursos adicionales
 
