@@ -857,20 +857,17 @@ head(do.call(rbind, coef_list))
 ****
 
 ### Expresiones regulares
+Las expresiones regulares son patrones que se usan para encontrar determinas combinaciones de caracteres en un orden específico. La idea detras de las expresiones regulares es poder analizar gramaticalmente archivos de texto o texto en general. En nuestro contexto lo que buscamos es la extracción de datos de fuentes de texto diversas. Una expresión regular se puede pensar como una combinación de caracteres literales y meta caracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado.
 
-La expresiones regulares no son solo de R.
-
-La idea detras de las expresiones regulares es poder parsear archivos de texto o texto en general. En nuestro contexto lo que buscamos es extraer datos de fuentes de texto diversas. Una expresion regular se puede pensar como una combinación de caracteres literales y meta caracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado.
-
-* literales: "c",""o","n","a","b","i","o"
-* metacaracteres: "*","?",".","|","^","$"
+* literales: "c",""o","n","a","b","i","o","2","0","6"
+* metacaracteres: "*","?",".","|","^","$","(",")","[","]"
 
 #### Operadores
 
-* .: Cualquier simbolo
+* .: Cualquier símbolo
 * [....]: Lista de caracteres, por ejemplo [Bb]iology10[1234] acepta cualquiera de las cadenas "Biology102", "biology101"
 * \: Sirve para usar los metacaracteres como caracteres literales ($ * + . ? [ ] ^ { } | ( ) \), por ejemplo 10\^3 va aceptar la cadena "10^3"
-* |: Operador "or" acepta un patron u otro, por ejemplo p(err|at)o va a aceptar tanto "perro" como "pato"
+* |: Operador "or" acepta un patrón u otro, por ejemplo p(err|at)o va a aceptar tanto "perro" como "pato"
 * (....): Grupos, sirven para recuperar partes del patrón encontrado para ser usadas después (se verá con ejemplo)
 
 #### Cuantificadores
@@ -881,6 +878,11 @@ La idea detras de las expresiones regulares es poder parsear archivos de texto o
 * {n}: Exactamente n veces el caracter anterior, por ejemplo 10{5}, únicamente va a aceptar la cadena "100000"
 * {n,}: Mínimo n veces el caracter anterior, por ejemplo 10{5,}, aceptará las cadenas "100000", "1000000", "1000000", etc
 * {n,m}: Entre n y m veces el caracter anterior, por ejemplo 10{2,5}, aceptará las cadenas "100", "10000"
+
+#### Posicionadores
+
+* ^: Inicio de la cadena, por ejemplo ^GAAA aceptará "GAAACCCTTT", pero no "CCCTGAAAC"
+* $: Fin de la cadena, por ejemplo TCCA$ aceptará "ACTTCCA" pero no "AGTCCATC"
 
 ### Expresiones regulares en R
 
