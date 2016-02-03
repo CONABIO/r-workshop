@@ -163,6 +163,7 @@ que hay varias maneras de determinarlas.
 ```{r}
 # cargamos el paquete
 library(tidyr) 
+library("dplyr")
 pew_tidy <- gather(data = pew, income, frequency, -religion)
 # vemos las primeras líneas de nuestros datos alargados 
 head(pew_tidy) 
@@ -222,7 +223,7 @@ que una canción entra por primera vez al top 100 de Billboard.
 
 ```{r}
 library(readr)
-billboard <- read_csv("data/billboard.csv")
+billboard <- read.csv("data/billboard.csv")
 billboard
 ```
 
@@ -299,7 +300,7 @@ debemos pasar a la función `separate`, esta recibe como parámetros:
 * el nombre de la variable que deseamos separar en más de una,  
 
 * la posición de donde deseamos "cortar" (hay más opciones para especificar 
-como separar, ver `?separate`.
+como separar, ver `?separate`)
 
 ```{r}
 tb_tidy <- separate(tb_long, demo, c("sex", "age"), 8)
@@ -458,7 +459,7 @@ atípicos.
 Muchos problemas de análisis de datos involucran la aplicación de la estrategia
 divide-aplica-combina, ([Hadley Whickam, 2011](http://www.jstatsoft.org/v40/i01/paper)) 
 esta consiste en romper un problema en pedazos (de 
-acuerdo a una variable de interés), operar sobre cada subcomjunto de manera
+acuerdo a una variable de interés), operar sobre cada subconjunto de manera
 independiente (ej. calcular la media de cada grupo, ordenar observaciones por 
 grupo, estandarizar por grupo) y después unir los pedazos nuevamente. El 
 siguiente diagrama ejemplifiaca el paradigma de divide-aplica-combina:
@@ -858,6 +859,153 @@ models[[1]]
 coef_list <- lapply(models, coef)
 head(do.call(rbind, coef_list))
 ```
+
+
+### Expresiones regulares
+
+La expresiones regulares no son solo de R.
+
+La idea detras de las expresiones regulares es poder parsear archivos de texto o texto en general. En nuestro contexto lo que buscamos es extraer datos de fuentes de texto diversas. Una expresion regular se puede pensar como una combinación de caracteres literales y meta caracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado.
+
+* literales: "c",""o","n","a","b","i","o"
+* metacaracteres: "*","?",".","|","^","$"
+
+#### Operadores
+
+* .: Cualquier simbolo
+* [....]: Lista de caracteres, por ejemplo [Bb]iology10[1234] acepta cualquiera de las cadenas "Biology102", "biology101"
+* \: Sirve para usar los metacaracteres como caracteres literales ($ * + . ? [ ] ^ { } | ( ) \), por ejemplo 10\^3 va aceptar la cadena "10^3"
+* |: Operador "or" acepta un patron u otro, por ejemplo p(err|at)o va a aceptar tanto "perro" como "pato"
+* (....): Grupos, sirven para recuperar partes del patrón encontrado para ser usadas después (se verá con ejemplo)
+
+#### Cuantificadores
+
+* *: Cero o más ocurrencias del caracter anterior, por ejemplo 10*, va a aceptar las cadenas "1", "10", "100", "1000", etc
+* +: Una o más ocurrencias del caracter anterior, por ejemplo 10+, va a aceptar las cadenas 10", "100", "1000", etc, pero no la cadena "1"
+* ?: Hasta una ocurrencia del caracter anterior, por ejemplo patos?, va aveptar las cadenas "pato" y "patos"
+* {n}: Exactamente n veces el caracter anterior, por ejemplo 10{5}, únicamente va a aceptar la cadena "100000"
+* {n,}: Mínimo n veces el caracter anterior, por ejemplo 10{5,}, aceptará las cadenas "100000", "1000000", "1000000", etc
+* {n,m}: Entre n y m veces el caracter anterior, por ejemplo 10{2,5}, aceptará las cadenas "100", "10000"
+
+### Expresiones regulares en R
+
+Las expresiones regulares son independientes del lenguaje R, existe una implementación para prácticamente cualquier lenguaje de programación. En lo que nos compete en este curso, veremos los principales usos que se le pueden dar en la plataforma de interés. Para ejemplificar el uso de expresiones regulares en el lenguaje R se usarán datos procedentes de la siguiente página [homicides](http://data.baltimoresun.com/news/police/homicides)
+
+```{r}
+homicides <- readLines("data/homicides.txt")
+head(homicides)
+```
+
+Podemos ver la naturaleza en la que vienen los datos.
+
+```{r}
+homicides[1]
+homicides[1000]
+```
+
+#### grep, grepl
+
+Las funciones grep y grepl, buscan las coincidencias del patrón (expresión regular), que se da como argumento. La función grep regresa los indices donde existió una coincidencia, la función grepl regresa una lista booleana donde las entradas son TRUE, cuando existe una coincidencia, FALSE cuando no hay tal. Usando la función grep podemos obtener el número de homicidios de nuestro dataset:
+
+```{r}
+length(grep("iconHomicideShooting", homicides))
+length(grep("iconHomicideShooting|icon_homicide_shooting", homicides))
+```
+Usando otra sección de la información obtenemos:
+
+```{r}
+length(grep("Cause: shooting", homicides))
+length(grep("Cause: [Ss]hooting", homicides))
+```
+Veamos que pasa si cambiamos el patrón de búsqueda:
+
+```{r}
+length(grep("[Ss]hooting", homicides))
+```
+¿Como obtenemos las diferencias entre ambos resultados?
+```{r}
+i <- grep("[cC]ause: [sS]hooting", homicides)
+j <- grep("[sS]hooting", homicides)
+str(i)
+str(j)
+setdiff(i, j)
+setdiff(j, i)
+```
+Analizando el resultado, vemos cual es la razón de dicha diferencia:
+```{r}
+homicides[859]
+```
+
+Como ya se mencionó, podemos obtener los indices de las ocurrencias del patrón de interés, también podemos obtener los valores directamente, o un vector booleano con las coincidencias (verdadero o falso) del patrón dentro de nuestro vector de cadenas.
+
+```{r}
+state.name
+grep("^New", state.name)
+grep("^New", state.name, value =TRUE)
+grepl("^New", state.name)
+```
+
+#### regexpr, gregexpr, regmatches
+
+La función regexpr, encuentra la posición y la longitud de la primera ocurrencia del patrón de interés dentro de una cadena (vector de caracteres). La función gregexpr tiene la misma funcionalidad, pero encuentra todas las coincidencias dentro de la cadena (la g se refiere a "global"):
+
+```{r}
+homicides[1]
+regexpr("<dd>[F|f]ound.*</dd>", homicides[1:5])
+substr(homicides[1], 177, 177 + 93 -1)
+```
+
+Por defecto, el cuantificador * es greedy (codicioso), es decir busca la coincidencia más larga posible dentro de la cadena. Podemos hacerlo lazy (perezoso), agregando un ? a la derecha del cuantificador:
+```{r}
+regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
+substr(homicides[1], 177, 177 + 33 -1)
+```
+
+La función regmatches sirve para obtener las cadenas que se encontraron usando regexpr:
+
+```{r}
+r <- regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
+regmatches(homicides[1:5], r)
+
+```
+
+#### sub, gsub
+
+La función sub substituye las coincidencias del patrón de interés
+
+```{r}
+sub("<dd>[F|f]ound on |</dd>", "", x)
+gsub("<dd>[F|f]ound on |</dd>", "", x)
+r <- regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
+regmatches(homicides[1:5], r)
+m <-regmatches(homicides[1:5], r)
+gsub("<dd>[F|f]ound on |</dd>", "", m)
+d <- gsub("<dd>[F|f]ound on |</dd>", "", m)
+as.Date(d, "%B %d, %Y")
+```
+
+#### regexec
+
+```{r}
+regexec("<dd>[F|f]ound on (.*?)</dd>", homicides[1:5])
+regexec("<dd>[F|f]ound on .*?</dd>", homicides[1:5])
+substr(homicides[1:5], 177, 177 + 93 -1)
+substr(homicides[1:5], 177, 177 + 33 -1)
+substr(homicides[1:5], 190, 190 + 15 -1)
+r <- regexec("<dd>[F|f]ound on (.*?)</dd>", homicides[1:5])
+regmatches(homicides[1:5], r)
+```
+
+#### Todo junto
+
+```{r}
+r <- regexec("<dd>[F|f]ound on (.*?)</dd>", homicides)
+m <- regmatches(homicides, r)
+dates <- sapply(m, function(x) x[2])
+dates <- as.Date(dates, "%B %d, %Y")
+hist(dates, "month", freq = TRUE)
+```
+
 
 
 ### Recursos adicionales

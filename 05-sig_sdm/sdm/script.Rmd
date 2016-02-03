@@ -1,0 +1,270 @@
+---
+title: "Modelos de distribución potencial"
+author: "Fernando Pardo"
+date: "28 de enero de 2016"
+output: html_document
+---
+
+## Introducción
+
+Como hemos visto a lo largo del curso, el lenguaje de programación R cuenta con
+múltiples paquetes para realizar casi cualquier tarea relacionada con manipulación,
+análisis y visualización de datos (y más). Ahora estudiaremos cómo ajustar (y graficar)
+modelos de distribución potencial de especies (_sdm's_).
+
+Un _modelo de distribución potencial de especies_, como su nombre lo indica, es
+una manera de estimar la región geográfica donde se dan las condiciones (abióticas)
+que permitirían a una especie sobrevivir. Para ello, normalmente se requiere tener
+presencias geolocalizadas de la especie en cuestión, así como rasters de variables
+ambientales. Los algoritmos de ajuste de modelos de distribución potencial, en
+cierto sentido, encuentran una región con condiciones ambientales similares a
+aquellas en que se observó la especie.
+
+Al principio, puede surgir la pregunta: ¿Para qué ajustar _sdm's_ con R, si existen
+herramientas visuales para hacerlo, sin tener que programar?
+
+La respuesta es una que ya conocemos: al ajustar sdm's utilizando código (en lugar
+de herramientas de apuntar y hacer click), todo nuestro procedimiento queda automáticamente
+registrado, haciendo que nuestro análisis sea totalmente reproducible.
+
+Más aún, como ya hemos visto, R nos da mucha flexibilidad para integrar nuestro
+análisis como parte de otro más complejo.
+
+## Instalación del paquete dismo con Maxent.
+
+Para hacer modelos de distribución potencial en R, utilizaremos el paquete
+[__dismo__](https://cran.r-project.org/web/packages/dismo/index.html). Cuya
+instalación es sencilla, sin embargo, para utilizar __Maxent__ se requiere de
+un procedimiento adicional:
+
+1. Instalar dismo de la forma usual:
+
+```{r eval=FALSE}
+install.packages("dismo")
+```
+
+2. Descargar la aplicación de java (__.jar__) para
+[Maxent](http://www.cs.princeton.edu/~schapire/maxent/). Es gratuita, pero hay 
+que registrarse.
+
+3. En la consola de R, escribir el siguiente comando:
+
+```{r eval=FALSE}
+system.file("java", package="dismo")
+```
+
+Esto dará como resultado una ruta, donde tenemos que guardar el archivo
+__maxent.jar__ descargado con anterioridad.
+
+Una vez hecho lo anterior, estamos listos para ajustar modelos de distribución potencial
+con R utilizando Maxent.
+
+__Nota__: La aplicación __maxent.jar__ contiene el código para ajustar modelos de
+distribución potencial, incluso hasta una interfaz gráfica para hacer esto, sin
+embargo, ya mencionamos las ventajas de hacer esto con R.
+
+## Obtención y preparación de datos de presencias
+
+Para efectos de este curso, ajustaremos un modelo de distribución potencial para
+la especie invasora _Melinis repens_, utilizando Maxent, extrayendo las presencias
+del SNIB:
+
+0. Cargamos los paquetes necesarios.
+
+```{r}
+# Paquetes de manipulación de datos espaciales.
+library("raster")
+library("rgdal")
+
+# Paquetes de manipulación de data frames (recuerden como buena práctica,
+# cargar plyr antes que dplyr)
+library("plyr")
+library("dplyr")
+library("tidyr")
+library("lubridate")
+
+# Paquetes para graficar
+library("ggplot2")
+
+# Paquetes para utilizar maxent
+library("rJava")
+library("dismo")
+```
+
+1. Nos conectamos a la base de datos del SNIB (MySQL) con __dplyr__:
+
+```{r}
+# Obtengo el password del SNIB de mi ambiente (ésta no es una medida de seguridad
+# máxima, pero por lo menos es mejor que escribirlo directamente)
+PASS_SNIB <- Sys.getenv("PASS_SNIB")
+
+# src_mysql es la función de dplyr que nos permite conectarnos a una base de datos
+#MySQL.
+base_input <- src_mysql(dbname = "geoportal", host = "172.16.1.139", port = 3306,
+   user = "lectura", password = PASS_SNIB)
+```
+
+2. Hacemos el query para la especie deseada (_Melinis repens_):
+
+```{r}
+# Recordar que tbl es para extraer una tabla de la base de datos, y que el query no
+# se ejecuta hasta que le indiquemos a R que necesitamos la información (comando
+# collect, por ejemplo)
+presencias <- tbl(base_input, "InformacionGeoportal") %>%
+  filter(especievalidabusqueda == "Melinis repens") %>%
+  select(
+    longitud,
+    latitud,
+    fecha = fechacolecta,
+    especie = especievalidabusqueda) %>%
+  collect() %>%
+  as.data.frame()
+```
+
+__Nota__: para efectos de este curso, vamos a agregar todos los datos del SNIB,
+no importando la fecha, y vamos a ajustar un modelo de distribución potencial
+utilizando unas variables ambientales (satelitales), sin fijarnos demasiado en
+esta última. Obviamente, para modelos más serios, es recomendable que las variables
+ambientales sean de fechas cercanas a aquellas en que se registraron las observaciones.
+
+3. En este paso, limpiaremos los datos. Para ello, primero los espacializaremos
+(pasaremos a formato _shape file_), con el fin de descartar todos los que quedan
+fuera de nuestra región de interés (México). Al final tendremos nuestros datos
+guardados en un shape file, que, junto con los rasters de variables ambientales,
+serán nuestros insumos para modelar utilizando __Maxent__.
+
+```{r}
+# Asignando coordenadas a la tabla de presencias:
+coordinates(presencias) <-~ longitud + latitud
+
+# Leyendo un raster con la misma proyección que nuestros datos, para extraérsela
+raster_lat_lon <- raster("aux/lat_lon.tif")
+
+# Extrayéndole la proyección a nuestro raster anterior, y asignándosela a nuestros
+# datos de presencias. Si los datos no están en la misma proyección, se tendrán
+# que reproyectar.
+projection(presencias) <- projection(raster_lat_lon)
+
+# Técnica para eliminar datos fuera de la región de interés: extraer del raster
+# que delimita la región los valores en los puntos donde se detectaron presencias,
+# y eliminar los puntos donde se extraiga un valor vacío (está fuera de la región
+# de interés)
+val <- raster::extract(raster_lat_lon, presencias)
+
+# Eliminando puntos que no caen en la región de interés:
+presencias_mex <- presencias[!is.na(val),]
+
+# Graficando ambos shapes con su respectivo raster:
+plot(raster_lat_lon)
+title("Raster México")
+
+plot(raster_lat_lon)
+points(presencias, pch = 20)
+title("Presencias de Melinis repens SNIB")
+
+plot(raster_lat_lon)
+points(presencias_mex, pch = 20)
+title("Presencias de Melinis repens SNIB Mexico")
+```
+
+## Preparación de datos ambientales (rasters):
+
+1. Enlistar las rutas a los archivos que contienen las variables ambientales
+```{r}
+paths_covariables <- list.files("variables_ambientales", pattern="\\.tif$",
+  full.names=TRUE)
+paths_covariables
+```
+
+2. Crear un ladrillo con dichos rasters :
+```{r}
+brik <- brick()
+for(i in 1:length(paths_covariables))
+{
+  aux <- raster(paths_covariables[i])
+  brik <- addLayer(brik,aux)
+}
+```
+
+3. revisando proyecciones:
+```{r}
+projection(brik) == projection(presencias_mex)
+```
+
+4. reproyectando __presencias_mex__ a la proyección de __brik__ (ésto es más fácil
+que reproyectar los rasters a la proyección del shape, puesto que para eso habría
+que interpolar)
+
+```{r}
+presencias_mex_lcc <- spTransform(presencias_mex, projection(brik))
+projection(brik) == projection(presencias_mex_lcc)
+```
+
+## Ajustando el modelo utilizando Maxent
+
+Ahora se ajustará el modelo de Maxent, utilizando la función del mismo nombre,
+que se encuentra en el paquete __dismo__. En orden, los argumentos/parámetros que
+estamos pasando a esta función son:
+
+* _brik_: el ladrillo que contiene los rasters de variables ambientales.
+* _presencias_mex_lcc_: datos de presencias de la especie en cuestión.
+* _removeDuplicates = TRUE_: remover observaciones que cayeron sobre el mismo pixel
+en el raster (para no tomar en cuenta dos veces la misma información).
+* _path_: ruta donde queremos guardar las salidas de la función.
+* _args_: parámetros que se le pasan a la aplicación maxent.jar. Para mayor información,
+revisar la ayuda de la aplicación. Por lo pronto:
+    + _-P_ es un parámetro para que Maxent cree las curvas de respuesta de las
+    variables ambientales, y se pueda ver su efecto (parcial) sobre la probabilidad
+    predicha de condiciones favorables.
+    + _replicates=5_ número de parámetros para la validación cruzada.
+    + _writebackgroundpredictions=true_ escribir un archivo csv con las predicciones.
+
+```{r}
+# Inicializando la máquina virtual de Java:
+.jinit()
+
+maxent_melrep_cv <- maxent(
+  brik,
+  presencias_mex_lcc,
+  removeDuplicates = TRUE,
+  path = "resultados/melinis_repens_cv",
+  args = c(
+    "-P",
+    "replicates=5",
+    "writebackgroundpredictions=true")
+  )
+```
+
+Si revisamos los resultados del anterior análisis, notaremos que tenemos 5 modelos
+distintos (ésto es porque se utilizaron 5 replicados para la validación cruzada).
+
+Se recomienda probar distintos modelos con validación cruzada (por ejemplo, modelos
+que utilicen distintas covariables), para poder compararlos. Al final, correr el
+que será el modelo final (eliminando la validación cruzada):
+
+```{r}
+maxent_melrep <- maxent(
+    brik,
+    presencias_mex_lcc,
+    removeDuplicates = TRUE,
+    path = "resultados/melinis_repens_cv",
+    args = c(
+      "-P",
+      # se eliminó la validación cruzada
+      "writebackgroundpredictions=true")
+    )
+```
+
+## Utilizando el modelo Maxent para predecir
+
+```{r}
+pred_melrep <- predict(maxent_melrep, brik,
+  filename="resultados/predicciones/pred_melrep.tif",
+  format="GTiff", overwrite=TRUE)
+
+plot(pred_melrep)
+#points(presencias_mex_lcc, pch = 20)
+title("SDM Melinis repens SNIB Mexico")
+```
+
+#SDMTools
