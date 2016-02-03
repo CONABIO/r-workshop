@@ -70,3 +70,17 @@ ggplot(tracks, aes(x = date, y = rank)) +
 
 
 #### 2. Una columna asociada a más de una variable
+
+# datos tuberculosis
+tb <- read_csv("data/tb.csv")
+tb
+
+# alargar
+tb_long <- gather(tb, demo, n, -iso2, -year, -id, na.rm = TRUE)
+tb_long
+
+tb_tidy <- separate(tb_long, demo, c("sex", "age"), 8)
+tb_tidy
+table(tb_tidy$sex)
+
+tb_tidy <- mutate(tb_tidy, sex = substr(sex, 8, 8))
