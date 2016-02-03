@@ -145,7 +145,7 @@ Esta base de datos tiene 3 variables: religión, ingreso y frecuencia. Para
 _limpiarla_ es necesario apilar las columnas (alargar los datos). Notemos
 que al alargar los datos desapareceran las columnas que se agrupan y dan lugar a
 dos nuveas columnas: la correspondiente a clave y la correspondiente a valor.
-Entonces, para alargar una base de datos usamos la función ´gather´ que recibe 
+Entonces, para alargar una base de datos usamos la función `gather` que recibe 
 los argumentos:
 
 * data: base de datos que vamos a reestructurar.  
@@ -248,7 +248,9 @@ limpieza adicional creando mejores variables de fecha.
 billboard_tidy <- billboard_long %>%
   mutate(
     week = extract_numeric(week),
-    date = as.Date(date.entered) + 7 * (week - 1)) %>%
+    date = date.entered + 7 * (week - 1), 
+    rank = as.numeric(rank)
+    ) %>%
     select(-date.entered)
 billboard_tidy
 ```
@@ -285,7 +287,7 @@ sexo-edad.
 como podemos separar la "variable" sexo-edad en dos columnas. 
 
 ```{r, echo=FALSE, results=FALSE}
-tb_long <- gather(tb, demo, n, -iso2, -year, na.rm = TRUE)
+tb_long <- gather(tb, demo, n, -iso2, -year, -id, na.rm = TRUE)
 tb_long
 ```
 
@@ -339,7 +341,7 @@ head(clima_vars)
 
 Finalmente, la columna *element* no es una variable, sino que almacena el nombre 
 de dos variables, la operación que debemos aplicar (spread) es el inverso de 
-apilar (gather):
+apilar (`gather`):
 
 ```{r}
 clima_tidy <- spread(clima_vars, element, value)
@@ -426,14 +428,14 @@ dicha dirección y los combina en un data frame.
 
 ```{r}
 library(plyr)
-specdata_US <- tbl_df(ldply(paths, read_csv))
-specdata_US
+specdata_US <- ldply(paths, read_csv)
+head(specdata_US)
 
+# eliminamos la basura del id
 specdata <- specdata_US %>%
-  mutate(
-    monitor = extract_numeric(.id),
-    date = as.Date(Date)) %>%
-    select(id = ID, monitor, date, sulfate, nitrate)
+  mutate(monitor = extract_numeric(.id)) %>%
+  select(id = ID, monitor, date = Date, sulfate, nitrate)
+head(specdata)
 ```
 
 #### 6. Otras consideraciones
@@ -619,11 +621,10 @@ resúmenes puedes hacer para explorar el retraso por fecha?
 quantile(x, p), n(), sum(x), sum(x > 1), mean(x > 1), sd(x).
 
 ```{r}
-by_date <- group_by(flights, date)
+flights$date_only <- as.Date(flights$date)
+by_date <- group_by(flights, date_only)
 no_miss <- filter(by_date, !is.na(dep))
-delays <- summarise(no_miss, 
-  mean_delay = mean(dep_delay),
-  n = n())
+delays <- summarise(no_miss, mean_delay = mean(dep_delay), n = n())
 ```
 
 
@@ -632,7 +633,7 @@ Cuando uno hace varias operaciones es difícil leer y entender el código:
 
 ```{r}
 hourly_delay <- filter(summarise(group_by(filter(flights, !is.na(dep_delay)), 
-  date, hour), delay = mean(dep_delay), n = n()), n > 10)
+  date_only, hour), delay = mean(dep_delay), n = n()), n > 10)
 ```
 
 La dificultad radica en que usualmente los parámetros se asignan después del 
@@ -645,7 +646,7 @@ Veamos como cambia el código anterior:
 ```{r}
 hourly_delay <- flights %>%
   filter(!is.na(dep_delay)) %>%
-  group_by(date, hour) %>%
+  group_by(date_only, hour) %>%
   summarise(delay = mean(dep_delay), n = n()) %>%
   filter(n > 10)
 ```
@@ -704,11 +705,11 @@ Hay varias maneras de unir dos bases de datos y debemos pensar en el
 obejtivo:
 
 ```{r}
-x <- data.frame(name = c("John", "Paul", "George", "Ringo", "Stuart", "Pete"),
+x <- data_frame(name = c("John", "Paul", "George", "Ringo", "Stuart", "Pete"),
   instrument = c("guitar", "bass", "guitar", "drums", "bass",
      "drums"))
 
-y <- data.frame(name = c("John", "Paul", "George", "Ringo", "Brian"),
+y <- data_frame(name = c("John", "Paul", "George", "Ringo", "Brian"),
   band = c("TRUE", "TRUE", "TRUE",  "TRUE", "FALSE"))
 x
 y
@@ -733,7 +734,7 @@ de unión adecuado?
 
 ```{r}
 hourly_delay <- flights %>%
-  group_by(date, hour) %>%
+  group_by(date_only, hour) %>%
   filter(!is.na(dep_delay)) %>%
   summarise(
     delay = mean(dep_delay),
@@ -745,7 +746,7 @@ delay_weather <- hourly_delay %>% left_join(weather)
 arrange(delay_weather, -delay)
 ```
 
-![](imagenes/manicule2.jpg) ¿Qué condiciones climáticas están asociadad
+![](imagenes/manicule2.jpg) ¿Qué condiciones climáticas están asociadas
 con retrasos en las salidas de Houston?
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Explora
@@ -853,6 +854,7 @@ coef_list <- lapply(models, coef)
 head(do.call(rbind, coef_list))
 ```
 
+****
 
 ### Expresiones regulares
 Las expresiones regulares son patrones que se usan para encontrar determinadas combinaciones de caracteres en un orden específico. La idea detras de las expresiones regulares es poder analizar gramáticalmente archivos de texto o texto en general. En nuestro contexto lo que buscamos es la extracción de datos de fuentes de texto diversas. Una expresión regular se puede pensar como una combinación de caracteres literales y metacaracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado. Los metacaracteres son aquellos que tienen una función particular en la expresión regular.
