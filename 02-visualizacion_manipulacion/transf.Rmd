@@ -223,7 +223,7 @@ que una canción entra por primera vez al top 100 de Billboard.
 
 ```{r}
 library(readr)
-billboard <- read.csv("data/billboard.csv")
+billboard <- read_csv("data/billboard.csv")
 billboard
 ```
 
@@ -430,7 +430,7 @@ dicha dirección y los combina en un data frame.
 ```{r}
 library(plyr)
 
-specdata_US <- tbl_df(ldply(paths, read.csv, stringsAsFactors = FALSE))
+specdata_US <- tbl_df(ldply(paths, read_csv, stringsAsFactors = FALSE))
 specdata_US
 
 specdata <- specdata_US %>%
@@ -474,19 +474,19 @@ En esta sección trabajaremos con las siguientes bases de datos para ejemplifcar
 las funciones de divide-aplica-combina:
 
 ```{r}
-flights <- tbl_df(read.csv("data/flights.csv", stringsAsFactors = FALSE))
+flights <- tbl_df(read_csv("data/flights.csv", stringsAsFactors = FALSE))
 flights
 class(flights$date)
 flights$date <- as.Date(flights$date)
 
-weather <- tbl_df(read.csv("data/weather.csv", stringsAsFactors = FALSE))
+weather <- tbl_df(read_csv("data/weather.csv", stringsAsFactors = FALSE))
 weather$date <- as.Date(weather$date)
 weather 
 
 planes <- tbl_df(read_csv("data/planes.csv"))
 planes
 
-airports <- tbl_df(read.csv("data/airports.csv", stringsAsFactors = FALSE))
+airports <- tbl_df(read_csv("data/airports.csv", stringsAsFactors = FALSE))
 airports
 ```
 
@@ -769,7 +769,7 @@ año y ajustaremos un modelo para explorar la relación entre número de bateos 
 carreras.
 
 ```{r}
-batting <- read.csv("data/batting.csv")
+batting <- read_csv("data/batting.csv")
 
 batting_center <- batting %>% 
   group_by(yearID) %>%
@@ -880,7 +880,7 @@ La idea detras de las expresiones regulares es poder parsear archivos de texto o
 
 #### Cuantificadores
 
-* *: Cero o más ocurrencias del caracter anterior, por ejemplo 10*, va a aceptar las cadenas "1", "10", "100", "1000", etc
+* \*: Cero o más ocurrencias del caracter anterior, por ejemplo 10\*, va a aceptar las cadenas "1", "10", "100", "1000", etc
 * +: Una o más ocurrencias del caracter anterior, por ejemplo 10+, va a aceptar las cadenas 10", "100", "1000", etc, pero no la cadena "1"
 * ?: Hasta una ocurrencia del caracter anterior, por ejemplo patos?, va aveptar las cadenas "pato" y "patos"
 * {n}: Exactamente n veces el caracter anterior, por ejemplo 10{5}, únicamente va a aceptar la cadena "100000"
@@ -933,6 +933,7 @@ setdiff(j, i)
 ```
 Analizando el resultado, vemos cual es la razón de dicha diferencia:
 ```{r}
+homicides[318]
 homicides[859]
 ```
 
