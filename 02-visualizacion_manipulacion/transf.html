@@ -254,7 +254,7 @@ pew</code></pre>
 16       46        40    41                 71
 17        3         4     4                  8
 18      407       321   258                597</code></pre>
-<p>Esta base de datos tiene 3 variables: religión, ingreso y frecuencia. Para <em>limpiarla</em> es necesario apilar las columnas (alargar los datos). Notemos que al alargar los datos desapareceran las columnas que se agrupan y dan lugar a dos nuveas columnas: la correspondiente a clave y la correspondiente a valor. Entonces, para alargar una base de datos usamos la función ´gather´ que recibe los argumentos:</p>
+<p>Esta base de datos tiene 3 variables: religión, ingreso y frecuencia. Para <em>limpiarla</em> es necesario apilar las columnas (alargar los datos). Notemos que al alargar los datos desapareceran las columnas que se agrupan y dan lugar a dos nuveas columnas: la correspondiente a clave y la correspondiente a valor. Entonces, para alargar una base de datos usamos la función <code>gather</code> que recibe los argumentos:</p>
 <ul>
 <li>data: base de datos que vamos a reestructurar.<br /></li>
 <li>key: nombre de la nueva variable que contiene lo que fueron los nombres de columnas que apilamos.<br /></li>
@@ -432,23 +432,23 @@ Variables not shown: new_sp_m2534 (int), new_sp_m3544 (int), new_sp_m4554
   (int), new_sp_f514 (int), new_sp_f014 (int), new_sp_f1524 (int),
   new_sp_f2534 (int), new_sp_f3544 (int), new_sp_f4554 (int), new_sp_f5564
   (int), new_sp_f65 (int), new_sp_fu (int)</code></pre>
-<p><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gxYSUNDX1BST0ZJTEUAAQEAAAxITGlubwIQAABtbnRyUkdCIFhZWiAHzgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLUhQICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABFjcHJ0AAABUAAAADNkZXNjAAABhAAAAGx3dHB0AAAB8AAAABRia3B0AAACBAAAABRyWFlaAAACGAAAABRnWFlaAAACLAAAABRiWFlaAAACQAAAABRkbW5kAAACVAAAAHBkbWRkAAACxAAAAIh2dWVkAAADTAAAAIZ2aWV3AAAD1AAAACRsdW1pAAAD+AAAABRtZWFzAAAEDAAAACR0ZWNoAAAEMAAAAAxyVFJDAAAEPAAACAxnVFJDAAAEPAAACAxiVFJDAAAEPAAACAx0ZXh0AAAAAENvcHlyaWdodCAoYykgMTk5OCBIZXdsZXR0LVBhY2thcmQgQ29tcGFueQAAZGVzYwAAAAAAAAASc1JHQiBJRUM2MTk2Ni0yLjEAAAAAAAAAAAAAABJzUkdCIElFQzYxOTY2LTIuMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWFlaIAAAAAAAAPNRAAEAAAABFsxYWVogAAAAAAAAAAAAAAAAAAAAAFhZWiAAAAAAAABvogAAOPUAAAOQWFlaIAAAAAAAAGKZAAC3hQAAGNpYWVogAAAAAAAAJKAAAA+EAAC2z2Rlc2MAAAAAAAAAFklFQyBodHRwOi8vd3d3LmllYy5jaAAAAAAAAAAAAAAAFklFQyBodHRwOi8vd3d3LmllYy5jaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkZXNjAAAAAAAAAC5JRUMgNjE5NjYtMi4xIERlZmF1bHQgUkdCIGNvbG91ciBzcGFjZSAtIHNSR0IAAAAAAAAAAAAAAC5JRUMgNjE5NjYtMi4xIERlZmF1bHQgUkdCIGNvbG91ciBzcGFjZSAtIHNSR0IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZGVzYwAAAAAAAAAsUmVmZXJlbmNlIFZpZXdpbmcgQ29uZGl0aW9uIGluIElFQzYxOTY2LTIuMQAAAAAAAAAAAAAALFJlZmVyZW5jZSBWaWV3aW5nIENvbmRpdGlvbiBpbiBJRUM2MTk2Ni0yLjEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHZpZXcAAAAAABOk/gAUXy4AEM8UAAPtzAAEEwsAA1yeAAAAAVhZWiAAAAAAAEwJVgBQAAAAVx/nbWVhcwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAo8AAAACc2lnIAAAAABDUlQgY3VydgAAAAAAAAQAAAAABQAKAA8AFAAZAB4AIwAoAC0AMgA3ADsAQABFAEoATwBUAFkAXgBjAGgAbQByAHcAfACBAIYAiwCQAJUAmgCfAKQAqQCuALIAtwC8AMEAxgDLANAA1QDbAOAA5QDrAPAA9gD7AQEBBwENARMBGQEfASUBKwEyATgBPgFFAUwBUgFZAWABZwFuAXUBfAGDAYsBkgGaAaEBqQGxAbkBwQHJAdEB2QHhAekB8gH6AgMCDAIUAh0CJgIvAjgCQQJLAlQCXQJnAnECegKEAo4CmAKiAqwCtgLBAssC1QLgAusC9QMAAwsDFgMhAy0DOANDA08DWgNmA3IDfgOKA5YDogOuA7oDxwPTA+AD7AP5BAYEEwQgBC0EOwRIBFUEYwRxBH4EjASaBKgEtgTEBNME4QTwBP4FDQUcBSsFOgVJBVgFZwV3BYYFlgWmBbUFxQXVBeUF9gYGBhYGJwY3BkgGWQZqBnsGjAadBq8GwAbRBuMG9QcHBxkHKwc9B08HYQd0B4YHmQesB78H0gflB/gICwgfCDIIRghaCG4IggiWCKoIvgjSCOcI+wkQCSUJOglPCWQJeQmPCaQJugnPCeUJ+woRCicKPQpUCmoKgQqYCq4KxQrcCvMLCwsiCzkLUQtpC4ALmAuwC8gL4Qv5DBIMKgxDDFwMdQyODKcMwAzZDPMNDQ0mDUANWg10DY4NqQ3DDd4N+A4TDi4OSQ5kDn8Omw62DtIO7g8JDyUPQQ9eD3oPlg+zD88P7BAJECYQQxBhEH4QmxC5ENcQ9RETETERTxFtEYwRqhHJEegSBxImEkUSZBKEEqMSwxLjEwMTIxNDE2MTgxOkE8UT5RQGFCcUSRRqFIsUrRTOFPAVEhU0FVYVeBWbFb0V4BYDFiYWSRZsFo8WshbWFvoXHRdBF2UXiReuF9IX9xgbGEAYZRiKGK8Y1Rj6GSAZRRlrGZEZtxndGgQaKhpRGncanhrFGuwbFBs7G2MbihuyG9ocAhwqHFIcexyjHMwc9R0eHUcdcB2ZHcMd7B4WHkAeah6UHr4e6R8THz4faR+UH78f6iAVIEEgbCCYIMQg8CEcIUghdSGhIc4h+yInIlUigiKvIt0jCiM4I2YjlCPCI/AkHyRNJHwkqyTaJQklOCVoJZclxyX3JicmVyaHJrcm6CcYJ0kneierJ9woDSg/KHEooijUKQYpOClrKZ0p0CoCKjUqaCqbKs8rAis2K2krnSvRLAUsOSxuLKIs1y0MLUEtdi2rLeEuFi5MLoIuty7uLyQvWi+RL8cv/jA1MGwwpDDbMRIxSjGCMbox8jIqMmMymzLUMw0zRjN/M7gz8TQrNGU0njTYNRM1TTWHNcI1/TY3NnI2rjbpNyQ3YDecN9c4FDhQOIw4yDkFOUI5fzm8Ofk6Njp0OrI67zstO2s7qjvoPCc8ZTykPOM9Ij1hPaE94D4gPmA+oD7gPyE/YT+iP+JAI0BkQKZA50EpQWpBrEHuQjBCckK1QvdDOkN9Q8BEA0RHRIpEzkUSRVVFmkXeRiJGZ0arRvBHNUd7R8BIBUhLSJFI10kdSWNJqUnwSjdKfUrESwxLU0uaS+JMKkxyTLpNAk1KTZNN3E4lTm5Ot08AT0lPk0/dUCdQcVC7UQZRUFGbUeZSMVJ8UsdTE1NfU6pT9lRCVI9U21UoVXVVwlYPVlxWqVb3V0RXklfgWC9YfVjLWRpZaVm4WgdaVlqmWvVbRVuVW+VcNVyGXNZdJ114XcleGl5sXr1fD19hX7NgBWBXYKpg/GFPYaJh9WJJYpxi8GNDY5dj62RAZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn6Wg/aJZo7GlDaZpp8WpIap9q92tPa6dr/2xXbK9tCG1gbbluEm5rbsRvHm94b9FwK3CGcOBxOnGVcfByS3KmcwFzXXO4dBR0cHTMdSh1hXXhdj52m3b4d1Z3s3gReG54zHkqeYl553pGeqV7BHtje8J8IXyBfOF9QX2hfgF+Yn7CfyN/hH/lgEeAqIEKgWuBzYIwgpKC9INXg7qEHYSAhOOFR4Wrhg6GcobXhzuHn4gEiGmIzokziZmJ/opkisqLMIuWi/yMY4zKjTGNmI3/jmaOzo82j56QBpBukNaRP5GokhGSepLjk02TtpQglIqU9JVflcmWNJaflwqXdZfgmEyYuJkkmZCZ/JpomtWbQpuvnByciZz3nWSd0p5Anq6fHZ+Ln/qgaaDYoUehtqImopajBqN2o+akVqTHpTilqaYapoum/adup+CoUqjEqTepqaocqo+rAqt1q+msXKzQrUStuK4trqGvFq+LsACwdbDqsWCx1rJLssKzOLOutCW0nLUTtYq2AbZ5tvC3aLfguFm40blKucK6O7q1uy67p7whvJu9Fb2Pvgq+hL7/v3q/9cBwwOzBZ8Hjwl/C28NYw9TEUcTOxUvFyMZGxsPHQce/yD3IvMk6ybnKOMq3yzbLtsw1zLXNNc21zjbOts83z7jQOdC60TzRvtI/0sHTRNPG1EnUy9VO1dHWVdbY11zX4Nhk2OjZbNnx2nba+9uA3AXcit0Q3ZbeHN6i3ynfr+A24L3hROHM4lPi2+Nj4+vkc+T85YTmDeaW5x/nqegy6LzpRunQ6lvq5etw6/vshu0R7ZzuKO6070DvzPBY8OXxcvH/8ozzGfOn9DT0wvVQ9d72bfb794r4Gfio+Tj5x/pX+uf7d/wH/Jj9Kf26/kv+3P9t////4QCMRXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAACugAwAEAAAAAQAAAA8AAAAA/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgADwArAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A9R+NCz+JfiX4u06Hxt4mtInu/slrZ2Os3UNvaKiKpKlJB8xYOxGSc+lfGqftvfHGx04aVp/xG1Ox0+CSXyVjgtpJQjOxCGWSJ2IUHAycgAcmvsL4gfs3fGmfxbr2oeG9DgvrO71FryA32qW8LmNpxIwf7235Sy4Gc9crWXqn/BJWHVfCVndWPjWfQ/Fs0rz3ttfW6XtggdmYRJ5fluCmVAbcQcHI6YAPiyT9qj41TKyyfFrxcVJyw+3qo/RBj8K94/Zx+LP7W/xQj1G38BeNovEh0ySOG8tvEs9qZbbeNyyMrQiTYw3APluUYYBBrZ8a/wDBLrx14F8LvqOk3ekfETVElR/7PjT+z4REM+ZHIJpGEodTwQyFGUH5gTj7H/Y6/ZOT9n7TL3WdYkW68Z6rAlndTxztIiWkcjtbxEn78gVgHk/iKigZ5/4X/aH/AGrPB7JD46/Z3j8SWsEgjn1Xwtq0EbyjB+eK3aRywzjqV9SB0H2D4S1m58ReGtN1O80m80C6uoFlk0zUGjNxbE/wSeWzLuHfaxHvWp5Izk9fanhQB0oEf//Z" /> De manera similar a los ejemplos anteriores, utiliza la función `gather para apilar las columnas correspondientes a sexo-edad.</p>
+<p><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gxYSUNDX1BST0ZJTEUAAQEAAAxITGlubwIQAABtbnRyUkdCIFhZWiAHzgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLUhQICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABFjcHJ0AAABUAAAADNkZXNjAAABhAAAAGx3dHB0AAAB8AAAABRia3B0AAACBAAAABRyWFlaAAACGAAAABRnWFlaAAACLAAAABRiWFlaAAACQAAAABRkbW5kAAACVAAAAHBkbWRkAAACxAAAAIh2dWVkAAADTAAAAIZ2aWV3AAAD1AAAACRsdW1pAAAD+AAAABRtZWFzAAAEDAAAACR0ZWNoAAAEMAAAAAxyVFJDAAAEPAAACAxnVFJDAAAEPAAACAxiVFJDAAAEPAAACAx0ZXh0AAAAAENvcHlyaWdodCAoYykgMTk5OCBIZXdsZXR0LVBhY2thcmQgQ29tcGFueQAAZGVzYwAAAAAAAAASc1JHQiBJRUM2MTk2Ni0yLjEAAAAAAAAAAAAAABJzUkdCIElFQzYxOTY2LTIuMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWFlaIAAAAAAAAPNRAAEAAAABFsxYWVogAAAAAAAAAAAAAAAAAAAAAFhZWiAAAAAAAABvogAAOPUAAAOQWFlaIAAAAAAAAGKZAAC3hQAAGNpYWVogAAAAAAAAJKAAAA+EAAC2z2Rlc2MAAAAAAAAAFklFQyBodHRwOi8vd3d3LmllYy5jaAAAAAAAAAAAAAAAFklFQyBodHRwOi8vd3d3LmllYy5jaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkZXNjAAAAAAAAAC5JRUMgNjE5NjYtMi4xIERlZmF1bHQgUkdCIGNvbG91ciBzcGFjZSAtIHNSR0IAAAAAAAAAAAAAAC5JRUMgNjE5NjYtMi4xIERlZmF1bHQgUkdCIGNvbG91ciBzcGFjZSAtIHNSR0IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZGVzYwAAAAAAAAAsUmVmZXJlbmNlIFZpZXdpbmcgQ29uZGl0aW9uIGluIElFQzYxOTY2LTIuMQAAAAAAAAAAAAAALFJlZmVyZW5jZSBWaWV3aW5nIENvbmRpdGlvbiBpbiBJRUM2MTk2Ni0yLjEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHZpZXcAAAAAABOk/gAUXy4AEM8UAAPtzAAEEwsAA1yeAAAAAVhZWiAAAAAAAEwJVgBQAAAAVx/nbWVhcwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAo8AAAACc2lnIAAAAABDUlQgY3VydgAAAAAAAAQAAAAABQAKAA8AFAAZAB4AIwAoAC0AMgA3ADsAQABFAEoATwBUAFkAXgBjAGgAbQByAHcAfACBAIYAiwCQAJUAmgCfAKQAqQCuALIAtwC8AMEAxgDLANAA1QDbAOAA5QDrAPAA9gD7AQEBBwENARMBGQEfASUBKwEyATgBPgFFAUwBUgFZAWABZwFuAXUBfAGDAYsBkgGaAaEBqQGxAbkBwQHJAdEB2QHhAekB8gH6AgMCDAIUAh0CJgIvAjgCQQJLAlQCXQJnAnECegKEAo4CmAKiAqwCtgLBAssC1QLgAusC9QMAAwsDFgMhAy0DOANDA08DWgNmA3IDfgOKA5YDogOuA7oDxwPTA+AD7AP5BAYEEwQgBC0EOwRIBFUEYwRxBH4EjASaBKgEtgTEBNME4QTwBP4FDQUcBSsFOgVJBVgFZwV3BYYFlgWmBbUFxQXVBeUF9gYGBhYGJwY3BkgGWQZqBnsGjAadBq8GwAbRBuMG9QcHBxkHKwc9B08HYQd0B4YHmQesB78H0gflB/gICwgfCDIIRghaCG4IggiWCKoIvgjSCOcI+wkQCSUJOglPCWQJeQmPCaQJugnPCeUJ+woRCicKPQpUCmoKgQqYCq4KxQrcCvMLCwsiCzkLUQtpC4ALmAuwC8gL4Qv5DBIMKgxDDFwMdQyODKcMwAzZDPMNDQ0mDUANWg10DY4NqQ3DDd4N+A4TDi4OSQ5kDn8Omw62DtIO7g8JDyUPQQ9eD3oPlg+zD88P7BAJECYQQxBhEH4QmxC5ENcQ9RETETERTxFtEYwRqhHJEegSBxImEkUSZBKEEqMSwxLjEwMTIxNDE2MTgxOkE8UT5RQGFCcUSRRqFIsUrRTOFPAVEhU0FVYVeBWbFb0V4BYDFiYWSRZsFo8WshbWFvoXHRdBF2UXiReuF9IX9xgbGEAYZRiKGK8Y1Rj6GSAZRRlrGZEZtxndGgQaKhpRGncanhrFGuwbFBs7G2MbihuyG9ocAhwqHFIcexyjHMwc9R0eHUcdcB2ZHcMd7B4WHkAeah6UHr4e6R8THz4faR+UH78f6iAVIEEgbCCYIMQg8CEcIUghdSGhIc4h+yInIlUigiKvIt0jCiM4I2YjlCPCI/AkHyRNJHwkqyTaJQklOCVoJZclxyX3JicmVyaHJrcm6CcYJ0kneierJ9woDSg/KHEooijUKQYpOClrKZ0p0CoCKjUqaCqbKs8rAis2K2krnSvRLAUsOSxuLKIs1y0MLUEtdi2rLeEuFi5MLoIuty7uLyQvWi+RL8cv/jA1MGwwpDDbMRIxSjGCMbox8jIqMmMymzLUMw0zRjN/M7gz8TQrNGU0njTYNRM1TTWHNcI1/TY3NnI2rjbpNyQ3YDecN9c4FDhQOIw4yDkFOUI5fzm8Ofk6Njp0OrI67zstO2s7qjvoPCc8ZTykPOM9Ij1hPaE94D4gPmA+oD7gPyE/YT+iP+JAI0BkQKZA50EpQWpBrEHuQjBCckK1QvdDOkN9Q8BEA0RHRIpEzkUSRVVFmkXeRiJGZ0arRvBHNUd7R8BIBUhLSJFI10kdSWNJqUnwSjdKfUrESwxLU0uaS+JMKkxyTLpNAk1KTZNN3E4lTm5Ot08AT0lPk0/dUCdQcVC7UQZRUFGbUeZSMVJ8UsdTE1NfU6pT9lRCVI9U21UoVXVVwlYPVlxWqVb3V0RXklfgWC9YfVjLWRpZaVm4WgdaVlqmWvVbRVuVW+VcNVyGXNZdJ114XcleGl5sXr1fD19hX7NgBWBXYKpg/GFPYaJh9WJJYpxi8GNDY5dj62RAZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn6Wg/aJZo7GlDaZpp8WpIap9q92tPa6dr/2xXbK9tCG1gbbluEm5rbsRvHm94b9FwK3CGcOBxOnGVcfByS3KmcwFzXXO4dBR0cHTMdSh1hXXhdj52m3b4d1Z3s3gReG54zHkqeYl553pGeqV7BHtje8J8IXyBfOF9QX2hfgF+Yn7CfyN/hH/lgEeAqIEKgWuBzYIwgpKC9INXg7qEHYSAhOOFR4Wrhg6GcobXhzuHn4gEiGmIzokziZmJ/opkisqLMIuWi/yMY4zKjTGNmI3/jmaOzo82j56QBpBukNaRP5GokhGSepLjk02TtpQglIqU9JVflcmWNJaflwqXdZfgmEyYuJkkmZCZ/JpomtWbQpuvnByciZz3nWSd0p5Anq6fHZ+Ln/qgaaDYoUehtqImopajBqN2o+akVqTHpTilqaYapoum/adup+CoUqjEqTepqaocqo+rAqt1q+msXKzQrUStuK4trqGvFq+LsACwdbDqsWCx1rJLssKzOLOutCW0nLUTtYq2AbZ5tvC3aLfguFm40blKucK6O7q1uy67p7whvJu9Fb2Pvgq+hL7/v3q/9cBwwOzBZ8Hjwl/C28NYw9TEUcTOxUvFyMZGxsPHQce/yD3IvMk6ybnKOMq3yzbLtsw1zLXNNc21zjbOts83z7jQOdC60TzRvtI/0sHTRNPG1EnUy9VO1dHWVdbY11zX4Nhk2OjZbNnx2nba+9uA3AXcit0Q3ZbeHN6i3ynfr+A24L3hROHM4lPi2+Nj4+vkc+T85YTmDeaW5x/nqegy6LzpRunQ6lvq5etw6/vshu0R7ZzuKO6070DvzPBY8OXxcvH/8ozzGfOn9DT0wvVQ9d72bfb794r4Gfio+Tj5x/pX+uf7d/wH/Jj9Kf26/kv+3P9t////4QCMRXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAACugAwAEAAAAAQAAAA8AAAAA/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgADwArAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A9R+NCz+JfiX4u06Hxt4mtInu/slrZ2Os3UNvaKiKpKlJB8xYOxGSc+lfGqftvfHGx04aVp/xG1Ox0+CSXyVjgtpJQjOxCGWSJ2IUHAycgAcmvsL4gfs3fGmfxbr2oeG9DgvrO71FryA32qW8LmNpxIwf7235Sy4Gc9crWXqn/BJWHVfCVndWPjWfQ/Fs0rz3ttfW6XtggdmYRJ5fluCmVAbcQcHI6YAPiyT9qj41TKyyfFrxcVJyw+3qo/RBj8K94/Zx+LP7W/xQj1G38BeNovEh0ySOG8tvEs9qZbbeNyyMrQiTYw3APluUYYBBrZ8a/wDBLrx14F8LvqOk3ekfETVElR/7PjT+z4REM+ZHIJpGEodTwQyFGUH5gTj7H/Y6/ZOT9n7TL3WdYkW68Z6rAlndTxztIiWkcjtbxEn78gVgHk/iKigZ5/4X/aH/AGrPB7JD46/Z3j8SWsEgjn1Xwtq0EbyjB+eK3aRywzjqV9SB0H2D4S1m58ReGtN1O80m80C6uoFlk0zUGjNxbE/wSeWzLuHfaxHvWp5Izk9fanhQB0oEf//Z" /> De manera similar a los ejemplos anteriores, utiliza la función <code>gather</code> para apilar las columnas correspondientes a sexo-edad.</p>
 <p>            Piensa en como podemos separar la “variable” sexo-edad en dos columnas.</p>
-<pre><code>Source: local data frame [41,519 x 4]
+<pre><code>Source: local data frame [35,750 x 5]
 
-    iso2  year   demo     n
-   (chr) (int) (fctr) (int)
-1     AD  1989     id     1
-2     AD  1990     id     2
-3     AD  1991     id     3
-4     AD  1992     id     4
-5     AD  1993     id     5
-6     AD  1994     id     6
-7     AD  1996     id     7
-8     AD  1997     id     8
-9     AD  1998     id     9
-10    AD  1999     id    10
-..   ...   ...    ...   ...</code></pre>
+      id  iso2  year       demo     n
+   (int) (chr) (int)     (fctr) (int)
+1     16    AD  2005 new_sp_m04     0
+2     17    AD  2006 new_sp_m04     0
+3     19    AD  2008 new_sp_m04     0
+4     43    AE  2006 new_sp_m04     0
+5     44    AE  2007 new_sp_m04     0
+6     45    AE  2008 new_sp_m04     0
+7     95    AG  2007 new_sp_m04     0
+8    142    AL  2005 new_sp_m04     0
+9    143    AL  2006 new_sp_m04     1
+10   144    AL  2007 new_sp_m04     0
+..   ...   ...   ...        ...   ...</code></pre>
 <p>Ahora separaremos las variables sexo y edad de la columna demo, para ello debemos pasar a la función <code>separate</code>, esta recibe como parámetros:</p>
 <ul>
 <li><p>el nombre de la base de datos,</p></li>
@@ -457,31 +457,31 @@ Variables not shown: new_sp_m2534 (int), new_sp_m3544 (int), new_sp_m4554
 </ul>
 <pre class="r"><code>tb_tidy &lt;- separate(tb_long, demo, c(&quot;sex&quot;, &quot;age&quot;), 8)
 tb_tidy</code></pre>
-<pre><code>Source: local data frame [41,519 x 5]
+<pre><code>Source: local data frame [35,750 x 6]
 
-    iso2  year   sex   age     n
-   (chr) (int) (chr) (chr) (int)
-1     AD  1989    id           1
-2     AD  1990    id           2
-3     AD  1991    id           3
-4     AD  1992    id           4
-5     AD  1993    id           5
-6     AD  1994    id           6
-7     AD  1996    id           7
-8     AD  1997    id           8
-9     AD  1998    id           9
-10    AD  1999    id          10
-..   ...   ...   ...   ...   ...</code></pre>
+      id  iso2  year      sex   age     n
+   (int) (chr) (int)    (chr) (chr) (int)
+1     16    AD  2005 new_sp_m    04     0
+2     17    AD  2006 new_sp_m    04     0
+3     19    AD  2008 new_sp_m    04     0
+4     43    AE  2006 new_sp_m    04     0
+5     44    AE  2007 new_sp_m    04     0
+6     45    AE  2008 new_sp_m    04     0
+7     95    AG  2007 new_sp_m    04     0
+8    142    AL  2005 new_sp_m    04     0
+9    143    AL  2006 new_sp_m    04     1
+10   144    AL  2007 new_sp_m    04     0
+..   ...   ...   ...      ...   ...   ...</code></pre>
 <pre class="r"><code>table(tb_tidy$sex)</code></pre>
 <pre><code>
-      id new_sp_f new_sp_m 
-    5769    17830    17920 </code></pre>
+new_sp_f new_sp_m 
+   17830    17920 </code></pre>
 <pre class="r"><code># creamos un mejor código de genero
 tb_tidy &lt;- mutate(tb_tidy, sex = substr(sex, 8, 8))
 table(tb_tidy$sex)</code></pre>
 <pre><code>
-          f     m 
- 5769 17830 17920 </code></pre>
+    f     m 
+17830 17920 </code></pre>
 </div>
 <div id="variables-almacenadas-en-filas-y-columnas" class="section level4">
 <h4>3. Variables almacenadas en filas y columnas</h4>
@@ -537,7 +537,7 @@ head(clima_vars)</code></pre>
 4 MX000017004  2010     2     2    TMIN  14.4
 5 MX000017004  2010     2     3    TMAX  24.1
 6 MX000017004  2010     2     3    TMIN  14.4</code></pre>
-<p>Finalmente, la columna <em>element</em> no es una variable, sino que almacena el nombre de dos variables, la operación que debemos aplicar (spread) es el inverso de apilar (gather):</p>
+<p>Finalmente, la columna <em>element</em> no es una variable, sino que almacena el nombre de dos variables, la operación que debemos aplicar (spread) es el inverso de apilar (<code>gather</code>):</p>
 <pre class="r"><code>clima_tidy &lt;- spread(clima_vars, element, value)
 head(clima_tidy)</code></pre>
 <pre><code>Source: local data frame [6 x 6]
@@ -1295,19 +1295,18 @@ head(do.call(rbind, coef_list))</code></pre>
 </div>
 <div id="expresiones-regulares" class="section level3">
 <h3>Expresiones regulares</h3>
-<p>La expresiones regulares no son solo de R.</p>
-<p>La idea detras de las expresiones regulares es poder parsear archivos de texto o texto en general. En nuestro contexto lo que buscamos es extraer datos de fuentes de texto diversas. Una expresion regular se puede pensar como una combinación de caracteres literales y meta caracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado.</p>
+<p>Las expresiones regulares son patrones que se usan para encontrar determinas combinaciones de caracteres en un orden específico. La idea detras de las expresiones regulares es poder analizar gramaticalmente archivos de texto o texto en general. En nuestro contexto lo que buscamos es la extracción de datos de fuentes de texto diversas. Una expresión regular se puede pensar como una combinación de caracteres literales y meta caracteres. Los caracteres literales son de los que están formadas las palabras en el lenguaje utilizado.</p>
 <ul>
-<li>literales: “c”,“”o“,”n“,”a“,”b“,”i“,”o&quot;</li>
-<li>metacaracteres: “*“,”?“,”.“,”|“,”^“,”$&quot;</li>
+<li>literales: “c”,“”o“,”n“,”a“,”b“,”i“,”o“,”2“,”0“,”6&quot;</li>
+<li>metacaracteres: “*“,”?“,”.“,”|“,”^“,”$“,”(“,”)“,”[“,”]&quot;</li>
 </ul>
 <div id="operadores" class="section level4">
 <h4>Operadores</h4>
 <ul>
-<li>.: Cualquier simbolo</li>
+<li>.: Cualquier símbolo</li>
 <li>[….]: Lista de caracteres, por ejemplo [Bb]iology10[1234] acepta cualquiera de las cadenas “Biology102”, “biology101”</li>
 <li>: Sirve para usar los metacaracteres como caracteres literales ($ * + . ? [ ] ^ { } | ( ) ), por ejemplo 10^3 va aceptar la cadena “10^3”</li>
-<li>|: Operador “or” acepta un patron u otro, por ejemplo p(err|at)o va a aceptar tanto “perro” como “pato”</li>
+<li>|: Operador “or” acepta un patrón u otro, por ejemplo p(err|at)o va a aceptar tanto “perro” como “pato”</li>
 <li>(….): Grupos, sirven para recuperar partes del patrón encontrado para ser usadas después (se verá con ejemplo)</li>
 </ul>
 </div>
@@ -1320,6 +1319,13 @@ head(do.call(rbind, coef_list))</code></pre>
 <li>{n}: Exactamente n veces el caracter anterior, por ejemplo 10{5}, únicamente va a aceptar la cadena “100000”</li>
 <li>{n,}: Mínimo n veces el caracter anterior, por ejemplo 10{5,}, aceptará las cadenas “100000”, “1000000”, “1000000”, etc</li>
 <li>{n,m}: Entre n y m veces el caracter anterior, por ejemplo 10{2,5}, aceptará las cadenas “100”, “10000”</li>
+</ul>
+</div>
+<div id="posicionadores" class="section level4">
+<h4>Posicionadores</h4>
+<ul>
+<li>^: Inicio de la cadena, por ejemplo ^GAAA aceptará “GAAACCCTTT”, pero no “CCCTGAAAC”</li>
+<li><span class="math">\(: Fin de la cadena, por ejemplo TCCA\)</span> aceptará “ACTTCCA” pero no “AGTCCATC”</li>
 </ul>
 </div>
 </div>
