@@ -426,7 +426,6 @@ dicha dirección y los combina en un data frame.
 
 ```{r}
 library(plyr)
-
 specdata_US <- tbl_df(ldply(paths, read_csv))
 specdata_US
 
@@ -874,7 +873,7 @@ La idea detras de las expresiones regulares es poder parsear archivos de texto o
 
 #### Cuantificadores
 
-* *: Cero o más ocurrencias del caracter anterior, por ejemplo 10*, va a aceptar las cadenas "1", "10", "100", "1000", etc
+* \*: Cero o más ocurrencias del caracter anterior, por ejemplo 10\*, va a aceptar las cadenas "1", "10", "100", "1000", etc
 * +: Una o más ocurrencias del caracter anterior, por ejemplo 10+, va a aceptar las cadenas 10", "100", "1000", etc, pero no la cadena "1"
 * ?: Hasta una ocurrencia del caracter anterior, por ejemplo patos?, va aveptar las cadenas "pato" y "patos"
 * {n}: Exactamente n veces el caracter anterior, por ejemplo 10{5}, únicamente va a aceptar la cadena "100000"
@@ -927,7 +926,9 @@ setdiff(j, i)
 ```
 Analizando el resultado, vemos cual es la razón de dicha diferencia:
 ```{r}
+homicides[318]
 homicides[859]
+homicides[2068]
 ```
 
 Como ya se mencionó, podemos obtener los indices de las ocurrencias del patrón de interés, también podemos obtener los valores directamente, o un vector booleano con las coincidencias (verdadero o falso) del patrón dentro de nuestro vector de cadenas.
@@ -965,11 +966,18 @@ regmatches(homicides[1:5], r)
 
 #### sub, gsub
 
-La función sub substituye las coincidencias del patrón de interés
+La función sub substituye la primera coincidencia del patrón de interés por la cadena indicada. Del mismo modo que con gregexpr, gsub substituye todas las ocurrencias del patrón en vez de únicamente la primera.
 
 ```{r}
+x <- substr(homicides[1], 177, 177 + 33 -1)
+x
 sub("<dd>[F|f]ound on |</dd>", "", x)
 gsub("<dd>[F|f]ound on |</dd>", "", x)
+```
+
+Podemos usar regmatches para operar sobre las coincidencias:
+
+```{r}
 r <- regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
 regmatches(homicides[1:5], r)
 m <-regmatches(homicides[1:5], r)
@@ -980,25 +988,32 @@ as.Date(d, "%B %d, %Y")
 
 #### regexec
 
+Tiene una función similar a regexpr, pero permite capturar grupos:
+
 ```{r}
-regexec("<dd>[F|f]ound on (.*?)</dd>", homicides[1:5])
-regexec("<dd>[F|f]ound on .*?</dd>", homicides[1:5])
-substr(homicides[1:5], 177, 177 + 93 -1)
-substr(homicides[1:5], 177, 177 + 33 -1)
-substr(homicides[1:5], 190, 190 + 15 -1)
-r <- regexec("<dd>[F|f]ound on (.*?)</dd>", homicides[1:5])
-regmatches(homicides[1:5], r)
+regexec("<dd>[F|f]ound on .*?</dd>", homicides[1:2])
+homicides[1]
+```
+Para capturar grupos usamos parentesis, usando una expresion regular, podemos obtener directamente la cadena de interés. La función regexec regresa la posición y longitud del grupo capturado.
+```{r}
+regexec("<dd>[F|f]ound on (.*?)</dd>", homicides[1:2])
+substr(homicides[1], 177, 177 + 33 -1)
+substr(homicides[1], 190, 190 + 15 -1)
+r <- regexec("<dd>[F|f]ound on (.*?)</dd>", homicides[1:2])
+regmatches(homicides[1:2], r)
 ```
 
 #### Todo junto
-
+A continuación veremos el poder de las expresiones regulares creando un histograma de los homicidios ocurridos por año desde 2006 hasta 2016:
 ```{r}
 r <- regexec("<dd>[F|f]ound on (.*?)</dd>", homicides)
 m <- regmatches(homicides, r)
 dates <- sapply(m, function(x) x[2])
 dates <- as.Date(dates, "%B %d, %Y")
-hist(dates, "month", freq = TRUE)
+hist(dates, "year", freq = TRUE)
 ```
+
+![Wait, forgot to escape a space.  Wheeeeee\[taptaptap\]eeeeee.](http://imgs.xkcd.com/comics/regular_expressions.png)
 
 
 
