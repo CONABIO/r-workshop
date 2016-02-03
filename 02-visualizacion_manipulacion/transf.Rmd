@@ -905,22 +905,25 @@ homicides[1000]
 
 #### grep, grepl
 
-
-Jugando con la función grep podemos obtener el número de homicidios:
+Las funciones grep y grepl, buscan las coincidencias del patrón (expresión regular), que se da como argumento. La función grep regresa los indices donde existió una coincidencia, la función grepl regresa una lista booleana donde las entradas son TRUE, cuando existe una coincidencia, FALSE cuando no hay tal. Usando la función grep podemos obtener el número de homicidios de nuestro dataset:
 
 ```{r}
 length(grep("iconHomicideShooting", homicides))
 length(grep("iconHomicideShooting|icon_homicide_shooting", homicides))
 ```
-
 Usando otra sección de la información obtenemos:
 
 ```{r}
 length(grep("Cause: shooting", homicides))
 length(grep("Cause: [Ss]hooting", homicides))
 ```
+Veamos que pasa si cambiamos el patrón de búsqueda:
+
 ```{r}
 length(grep("[Ss]hooting", homicides))
+```
+¿Como obtenemos las diferencias entre ambos resultados?
+```{r}
 i <- grep("[cC]ause: [sS]hooting", homicides)
 j <- grep("[sS]hooting", homicides)
 str(i)
@@ -928,14 +931,12 @@ str(j)
 setdiff(i, j)
 setdiff(j, i)
 ```
-
 Analizando el resultado, vemos cual es la razón de dicha diferencia:
-
 ```{r}
 homicides[859]
 ```
 
-Así como podemos obtener los indices de las ocurrencias del patrón de interés, también podemos obtener los valores directamente, o un vector booleano con las incidencias (verdadero o falso) del patrón dentro de nuestro vector de cadenas.
+Como ya se mencionó, podemos obtener los indices de las ocurrencias del patrón de interés, también podemos obtener los valores directamente, o un vector booleano con las coincidencias (verdadero o falso) del patrón dentro de nuestro vector de cadenas.
 
 ```{r}
 state.name
@@ -944,21 +945,33 @@ grep("^New", state.name, value =TRUE)
 grepl("^New", state.name)
 ```
 
-#### regexpr, regmatches
+#### regexpr, gregexpr, regmatches
+
+La función regexpr, encuentra la posición y la longitud de la primera ocurrencia del patrón de interés dentro de una cadena (vector de caracteres). La función gregexpr tiene la misma funcionalidad, pero encuentra todas las coincidencias dentro de la cadena (la g se refiere a "global"):
 
 ```{r}
 homicides[1]
 regexpr("<dd>[F|f]ound.*</dd>", homicides[1:5])
 substr(homicides[1], 177, 177 + 93 -1)
+```
+
+Por defecto, el cuantificador * es greedy (codicioso), es decir busca la coincidencia más larga posible dentro de la cadena. Podemos hacerlo lazy (perezoso), agregando un ? a la derecha del cuantificador:
+```{r}
 regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
 substr(homicides[1], 177, 177 + 33 -1)
+```
+
+La función regmatches sirve para obtener las cadenas que se encontraron usando regexpr:
+
+```{r}
 r <- regexpr("<dd>[F|f]ound.*?</dd>", homicides[1:5])
 regmatches(homicides[1:5], r)
-x <- substr(homicides[1], 177, 177 + 33 -1)
-x
+
 ```
 
 #### sub, gsub
+
+La función sub substituye las coincidencias del patrón de interés
 
 ```{r}
 sub("<dd>[F|f]ound on |</dd>", "", x)
