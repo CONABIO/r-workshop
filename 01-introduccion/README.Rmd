@@ -286,6 +286,25 @@ abalone <- read_csv("https://archive.ics.uci.edu/ml/machine-learning-databases/a
 str(abalone)
 ```
 
+Tamién existe una función `read.csv` incluída en R base (es decir sin necesidad de cargar paquetes); sin embargo, las funciones del paquete `readr` son más
+fáciles de usar (por la manera en que leen columnas de caracteres y por como 
+trata a las horas y fechas) y más rápidas, para ver las ventajas leer 
+[readr 0.2.0](http://www.r-bloggers.com/readr-0-2-0/). 
+
+Veamos un ejemplo de `read_csv` contra `read.csv`, en el primer caso las fechas
+se leen como tipo fecha, esto quiere decir que podemos hacer operaciones de 
+fechas. En el segundo caso esto no es posible pues los lee como factores.
+
+```{r}
+weather <- read_csv("data/weather.csv")
+class(weather$date)
+weather$date[1] + 1
+
+weather <- read.csv("data/weather.csv")
+class(weather$date)
+weather$date[1] + 1
+```
+
 
 En caso de que se quieran leer hojas de excel se recomienda el paquete *readxl*.
 
