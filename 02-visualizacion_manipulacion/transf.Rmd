@@ -1,6 +1,6 @@
 ---
 title: "Manipulación y agrupación de datos"
-author: "Teresa Ortiz"
+author: "Teresa Ortiz, Amaury Gutiérrez"
 date: "Febrero 2015"
 output:
   html_document:
@@ -22,10 +22,6 @@ siguientes puntos:
 * Reestructura de datos y el principio de los datos limpios.
 
 * Estrategia divide-aplica-combina.
-
-Para seguir estas notas debes descargar los datos de este  [link](https://www.dropbox.com/sh/c0mgho95gwjc1mv/AACVLPr33O6ENW68xmL7hyUna?dl=0)
-y guardarlos en una carperta llamada *data*,  esta última debe estar en tu 
-directorio de trabajo.
 
 ### Análisis de datos
 
@@ -88,8 +84,8 @@ tratamientoA|- |    16     |   3
 tratamientoB|2 |    11     |   1
 
 
-Si vemos los principios (cada variable forma una columna, cada observación forma 
-un renglón, cada tipo de unidad observacional forma una tabla), 
+Si vemos los principios (cada variable forma una columna, cada observación 
+forma un renglón, cada tipo de unidad observacional forma una tabla), 
 ¿las tablas anteriores cumplen los principios?
 
 Para responder la pregunta veamos primero cuáles son las variables y cuáles
@@ -163,7 +159,8 @@ que hay varias maneras de determinarlas.
 ```{r}
 # cargamos el paquete
 library(tidyr) 
-library("dplyr")
+library(plyr)
+library(dplyr)
 pew_tidy <- gather(data = pew, income, frequency, -religion)
 # vemos las primeras líneas de nuestros datos alargados 
 head(pew_tidy) 
@@ -223,7 +220,7 @@ que una canción entra por primera vez al top 100 de Billboard.
 
 ```{r}
 library(readr)
-billboard <- read.csv("data/billboard.csv")
+billboard <- read_csv("data/billboard.csv")
 billboard
 ```
 
@@ -430,7 +427,7 @@ dicha dirección y los combina en un data frame.
 ```{r}
 library(plyr)
 
-specdata_US <- tbl_df(ldply(paths, read.csv, stringsAsFactors = FALSE))
+specdata_US <- tbl_df(ldply(paths, read_csv))
 specdata_US
 
 specdata <- specdata_US %>%
@@ -473,20 +470,17 @@ siguiente diagrama ejemplifiaca el paradigma de divide-aplica-combina:
 En esta sección trabajaremos con las siguientes bases de datos para ejemplifcar
 las funciones de divide-aplica-combina:
 
-```{r}
-flights <- tbl_df(read.csv("data/flights.csv", stringsAsFactors = FALSE))
+```{r, warning=FALSE}
+flights <- read_csv("data/flights.csv")
 flights
-class(flights$date)
-flights$date <- as.Date(flights$date)
 
-weather <- tbl_df(read.csv("data/weather.csv", stringsAsFactors = FALSE))
-weather$date <- as.Date(weather$date)
+weather <- read_csv("data/weather.csv")
 weather 
 
-planes <- tbl_df(read_csv("data/planes.csv"))
+planes <- read_csv("data/planes.csv")
 planes
 
-airports <- tbl_df(read.csv("data/airports.csv", stringsAsFactors = FALSE))
+airports <- read_csv("data/airports.csv")
 airports
 ```
 
@@ -514,7 +508,7 @@ Creamos una base de datos de juguete para mostrar el funcionamiento de cada
 instrucción:
 
 ```{r}
-df_ej <- data.frame(genero = c("mujer", "hombre", "mujer", "mujer", "hombre"), 
+df_ej <- data_frame(genero = c("mujer", "hombre", "mujer", "mujer", "hombre"), 
   estatura = c(1.65, 1.80, 1.70, 1.60, 1.67))
 df_ej
 
@@ -769,7 +763,7 @@ año y ajustaremos un modelo para explorar la relación entre número de bateos 
 carreras.
 
 ```{r}
-batting <- read.csv("data/batting.csv")
+batting <- read_csv("data/batting.csv")
 
 batting_center <- batting %>% 
   group_by(yearID) %>%
