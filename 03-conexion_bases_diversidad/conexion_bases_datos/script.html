@@ -663,15 +663,25 @@ kable(datos_snib_sitios_generos[1:5,1:10])</code></pre>
 </div>
 <div id="conexion-a-una-base-de-datos-sql-server-u-oracle" class="section level2">
 <h2>Conexión a una base de datos SQL Server u Oracle</h2>
-<p>Para conectarnos a estas bases de datos, se necesita utilizar otro paquete. Aquí lo ejemplificaremos con <strong>RJDBC</strong>. La información que se requiere para hacer la conexión es muy parecida (dirección del servidor, puerto, base de datos, usuario, etc…). Sin embargo, el proceso de conexión es un poco más complicado:</p>
+<p>Para conectarnos a estas bases de datos, se necesita utilizar otro paquete. Aquí lo ejemplificaremos con <strong>RJDBC</strong>. Se necesita hacer una configuración previa para utilizar este paquete:</p>
+<ol style="list-style-type: decimal">
+<li><p>Descargar el driver de SQL Server <a href="http://www.microsoft.com/en-us/download/details.aspx?displaylang=en&amp;id=11774">aquí:</a>. Descargar el archivo <strong>sqljdbc_6.0.6629.101_enu.exe</strong> (Windows), o el <strong>sqljdbc_6.0.6629.101_enu.tar.gz</strong> (Mac OS/Linux).</p></li>
+<li><ul>
+<li>Para Windows, correr el ejecutable. Apuntar de la ruta donde se encuentra el archivo <em>jar</em>, porque será necesaria posteriormente.</li>
+<li>Para Mac, abrir la terminal, mover el archivo a <em>home del usuario</em>, abrir la terminal y correr el comando: <em>tar -xf nombre_del_archivo</em>.</li>
+</ul></li>
+</ol>
+<p>La información que se requiere para hacer la conexión es muy parecida (dirección del servidor, puerto, base de datos, usuario, etc…). Sin embargo, el proceso de conexión es un poco más complicado:</p>
 <pre class="r"><code>library(&quot;RJDBC&quot;)</code></pre>
 <pre><code>## Loading required package: DBI
 ## Loading required package: rJava</code></pre>
 <pre class="r"><code># Conexión a la base de datos con RJDBC:
 
-# 1. Creo un objeto tipo Driver (paso adicional).
+# 1. Creo un objeto tipo Driver (paso adicional). En classPath debemos poner la
+# ruta donde se encuentra el archivo sqljdbc4.jar que se encuentra en la carpeta
+# que acabamos de descargar.
 drv &lt;- JDBC(driverClass = &quot;com.microsoft.sqlserver.jdbc.SQLServerDriver&quot;, 
-  classPath = &quot;~/sqljdbc_4.0/enu/sqljdbc4.jar&quot;, identifier.quote=&quot;`&quot;)
+  classPath = &quot;auxiliar/sqljdbc4.jar&quot;, identifier.quote=&quot;`&quot;)
 
 # 2. Obtengo el password del INFyS
 PASS_INFYS = Sys.getenv(&quot;PASS_INFYS&quot;)

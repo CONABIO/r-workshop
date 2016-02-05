@@ -195,7 +195,7 @@ library("RJDBC")
 # ruta donde se encuentra el archivo sqljdbc4.jar que se encuentra en la carpeta
 # que acabamos de descargar.
 drv <- JDBC(driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver", 
-  classPath = "/Users/GreatDragonian/sqljdbc_6.0/enu/sqljdbc4.jar", identifier.quote="`")
+  classPath = "auxiliar/sqljdbc4.jar", identifier.quote="`")
 
 # 2. Obtengo el password del INFyS
 PASS_INFYS = Sys.getenv("PASS_INFYS")
