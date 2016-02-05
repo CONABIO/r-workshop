@@ -1,0 +1,242 @@
+---
+title: "Conexión a bases de datos con dplyr"
+author: "Fernando Pardo"
+date: "3 de febrero de 2016"
+output: html_document
+---
+
+## Introducción
+
+En este tema, se explicará cómo se puede utilizar r para conectarse a bases de
+datos (ya sea remotas o locales), con el fin de obtener datos para nuestros análisis.
+
+Primero que nada, vale la pena hablar un poco de la estructura de una __base de
+datos relacional__:
+
+1. La información se almacena en tablas, cada una de las cuáles describe objetos
+bien determinados.
+
+2. Los registros de tablas distintas se enlazan mediante identificadores __id's__.
+
+En un __esquema de la base de datos__, las tablas se representan por rectángulos,
+y se enlistan los campos que contienen (con su tipo de datos). Las ligas entre 
+tablas se representan por líneas. Por ejemplo, tenemos la estructura de bases de
+datos para un blog sencillo:
+
+![Esquema de una base de datos](aux/schema_1.jpg)
+
+Y las tablas se verían como sigue:
+
+```{r, echo=FALSE}
+library("knitr")
+Categories <- data.frame(
+  "id" = 1:3,
+  "Category" = c("deportes extremos", "danza", "artes marciales")
+  )
+
+kable(Categories, caption = "Categories")
+
+Entries <- data.frame(
+  "id" = 1:3,
+  "Cat_id" = c(1,1,3),
+  "Date" = c("15-01-2014", "16-02-2015", "20-01-2016"),
+  "Subject" = c("Tricking", "Downhill longboarding", "Kung Fu"),
+  "Body" = c("El tricking es...", "Consejos para no morir...",
+    "El templo Shaolin...")
+  )
+
+kable(Entries, caption = "Entries")
+
+Comments <- data.frame(
+  "id" = 1,
+  "Entry_id" = 2,
+  "Date" = "17-02-2015",
+  "Name" = "Fernando P.",
+  "Comment" = "qué miedo!"
+)
+
+kable(Comments, caption = "Comments")
+```
+
+Como se puede observar, cada comentario hace referencia a una entrada del blog,
+que hace referencia a una categoría.
+
+En la clase de ayer ya vimos cómo lidiar con información organizada de esta manera:
+usando los joins que vienen en el paquete __dplyr__. Por ejemplo:
+
+```{r}
+library("dplyr")
+library("tidyr")
+
+entradas_comentarios <- Entries %>%
+  inner_join(Comments, by = c("id" = "Entry_id"))
+kable(entradas_comentarios)
+```
+
+En realidad, los esquemas de bases de datos reales se ven como el siguiente:
+![Esquema de una base de datos real](aux/schema_2.png)
+
+## Conexión a bases de datos SQLite, PostgreSQL y MySQL
+
+Para conectarnos a estas bases de datos, lo más fácil es utilizar el paquete
+__dplyr__, que incluye las funciones __src_sqlite__, __src_postgres__ y __src_mysql__.
+
+Para ejemplificar el uso de dichas funciones, nos conectaremos al SNIB utilizando
+__src_mysql__ (sabemos de antemano que el SNIB es de este tipo de base de datos):
+
+```{r}
+# Obtengo el password del SNIB de mi ambiente local, aunque no es seguridad máxima,
+# es mejor que escribirlo y subirlo a internet.
+PASS_SNIB <- Sys.getenv("PASS_SNIB")
+
+# Utilizando dplyr me conecto a la base, y la conexión la llamo base_input
+snib <- src_mysql(dbname = "geoportal", host = "172.16.1.139", port = 3306,
+   user = "lectura", password = PASS_SNIB)
+
+# Obteniendo la lista de tablas de la base de datos:
+src_tbls(snib)
+```
+
+Los parámetros de la función __src_mysql__ son los siguientes, y se debe preguntar
+por sus valores a los encargados de la administración de la base de datos:
+
+* __dbname__: nombre de la base de datos
+* __host__: dirección del servidor de la base de datos
+* __port__: puerto de acceso a la base de datos
+* __user__: usuario (debe estar registrado en la base)
+* __password__
+
+Una vez que obtuvimos acceso a la base, podemos hacerle __queries (consultas)__
+y obtener datos. Las consultas se realizan a una o varias __tablas (tbl)__,
+__seleccionando (select)__ campos de interés y __filtrando (filter)__ registros
+de acuerdo a criterios deseados.
+
+Por ejemplo:
+
+```{r}
+# para obtener una tabla, usamos la función tbl, que acepta la conexión a la base
+#de datos, y el nombre de la tabla.
+
+datos_snib_ejemplo <- tbl(snib, "InformacionGeoportal") %>%
+  head() %>%
+  collect()
+
+# Visualizando los datos
+datos_snib_ejemplo
+glimpse(datos_snib_ejemplo)  #función dentro del paquete dplyr.
+
+datos_snib_38 <- tbl(snib, "InformacionGeoportal") %>%
+  filter(proyecto == "038") %>%
+  select(
+    longitud,
+    latitud,
+    fecha = fechacolecta,
+    especie = especievalidabusqueda) %>%
+# al final usamos collect para obtener los datos (mientras no lo hagamos, los datos
+# no se obtienen: lazy evaluation)
+  collect()
+
+# Visualizando los datos
+glimpse(datos_snib_38)
+```
+
+Cabe destacar que los datos recién obtenidos deben ser limpiados (recordar la
+clase pasada), antes de jugar con ellos:
+
+```{r}
+
+# Creando nuestra matriz de sitios por géneros, sabemos que no encaja muy bien
+# dentro de la definición de datos limpios, pero es muy utilizada en ecología.
+datos_snib_sitios_generos <- datos_snib_38 %>%
+  filter(!is.na(latitud), !is.na(longitud), !is.na(especie), especie != "") %>%
+  separate(especie, c("genero", "especie")) %>%
+  group_by(genero, latitud, longitud) %>%
+    summarize(
+      abundancia = n()
+    ) %>%
+  spread(genero, abundancia, fill = 0)
+
+# Viendo una subtabla de la anterior
+kable(datos_snib_sitios_generos[1:5,1:10])
+```
+
+Finalmente, conectarse a una base postgres es muy parecido (si no es que igual,
+a conectarse a una base mysql). Conectarse a una base sqlite sólo requiere saber
+el path hacia ella (pues una base sqlite es un archivo local).
+
+__Ejercicio:__ haz algunos queries interesantes a la base de datos del SNIB, por
+ejemplo, obtén información acerca de algunas especies que te interesen.
+
+## Conexión a una base de datos SQL Server u Oracle
+
+Para conectarnos a estas bases de datos, se necesita utilizar otro paquete. Aquí
+lo ejemplificaremos con __RJDBC__. La información que se requiere para hacer la
+conexión es muy parecida (dirección del servidor, puerto, base de datos, usuario,
+etc...). Sin embargo, el proceso de conexión es un poco más complicado:
+
+```{r}
+library("RJDBC")
+
+# Conexión a la base de datos con RJDBC:
+
+# 1. Creo un objeto tipo Driver (paso adicional).
+drv <- JDBC(driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver", 
+  classPath = "~/sqljdbc_4.0/enu/sqljdbc4.jar", identifier.quote="`")
+
+# 2. Obtengo el password del INFyS
+PASS_INFYS = Sys.getenv("PASS_INFYS")
+
+# 3. Me conecto con la información provista por el administrador de la base de datos.
+infys <- dbConnect(drv, 
+  "jdbc:sqlserver://172.16.1.165;databaseName=INFyS_2009_2012",
+  port = 49354, user = "fpardo", password = PASS_INFYS)
+
+# Obteniendo los nombres de las tablas de la base de datos
+dbGetTables(infys)[,c("TABLE_SCHEM", "TABLE_NAME")]
+```
+
+En el proceso anterior:
+
+Primero creé un objeto del tipo driver, que contiene la información acerca de cómo
+establecer la conexión con una base de datos SQL Server (en este caso). Ésto se
+logra con la función __JDBC__, del paquete __RJDBC__.
+
+En el segundo paso me conecto a la base de datos deseada, utilizando la función
+__dbConnect__. Primero le paso el driver y luego las credenciales.
+
+Ya que me conecté al INFyS, puedo obtener los datos, en este caso se utilizan otra
+función distinta a __tbl()__ puesto que no estamos usando dplyr para conectarnos
+a la base de datos. Cabe destacar que tampoco necesitamos usar ninguna función que
+juegue el papel de __collect()__:
+
+```{r}
+conglomerados <- dbReadTable(infys, "dbo.TblConglomerado")
+class(conglomerados)
+glimpse(conglomerados)
+
+estados <- dbReadTable(infys, "dbo.CatEstado")
+colnames(estados)
+head(estados)
+```
+
+Como los datos ya los tenemos en formato data frame de R, podemos utilizarlos para
+hacer nuestros análisis, usando todo lo que hemos aprendido con anterioridad.
+
+```{r}
+
+conglomerados_estados_id <- conglomerados %>%
+  select(
+    IdConglomerado,
+    Estado
+  )
+head(conglomerados_estados_id)
+
+# Por ejemplo, haciendo el join de conglomerados con estados para cambiar el id de
+# estado por el nombre:
+conglomerados_estados <- conglomerados_estados_id %>%
+  inner_join(estados, by = c("Estado" = "CveEstado"))
+```
+
+Para conectarnos a bases de datos Access, se puede utilizar el paquete
+[RODBC](https://cran.r-project.org/web/packages/RODBC/index.html). Un tutorial
+útil se puede encontrar [aquí](http://rprogramming.net/connect-to-ms-access-in-r/).
