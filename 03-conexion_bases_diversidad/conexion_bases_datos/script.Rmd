@@ -23,7 +23,7 @@ y se enlistan los campos que contienen (con su tipo de datos). Las ligas entre
 tablas se representan por líneas. Por ejemplo, tenemos la estructura de bases de
 datos para un blog sencillo:
 
-![Esquema de una base de datos](aux/schema_1.jpg)
+![Esquema de una base de datos](auxiliar/schema_1.jpg)
 
 Y las tablas se verían como sigue:
 
@@ -74,7 +74,7 @@ kable(entradas_comentarios)
 ```
 
 En realidad, los esquemas de bases de datos reales se ven como el siguiente:
-![Esquema de una base de datos real](aux/schema_2.png)
+![Esquema de una base de datos real](auxiliar/schema_2.png)
 
 ## Conexión a bases de datos SQLite, PostgreSQL y MySQL
 
@@ -170,7 +170,19 @@ ejemplo, obtén información acerca de algunas especies que te interesen.
 ## Conexión a una base de datos SQL Server u Oracle
 
 Para conectarnos a estas bases de datos, se necesita utilizar otro paquete. Aquí
-lo ejemplificaremos con __RJDBC__. La información que se requiere para hacer la
+lo ejemplificaremos con __RJDBC__. Se necesita hacer una configuración previa para
+utilizar este paquete:
+
+1. Descargar el driver de SQL Server [aquí:](http://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=11774). Descargar el archivo __sqljdbc_6.0.6629.101_enu.exe__ (Windows), o el
+__sqljdbc_6.0.6629.101_enu.tar.gz__ (Mac OS/Linux).
+
+2. 
+    * Para Windows, correr el ejecutable. Apuntar de la ruta donde se encuentra
+    el archivo _jar_, porque será necesaria posteriormente.
+    * Para Mac, abrir la terminal, mover el archivo a _home del usuario_, abrir la
+    terminal y correr el comando: _tar -xf nombre_del_archivo_.
+
+La información que se requiere para hacer la
 conexión es muy parecida (dirección del servidor, puerto, base de datos, usuario,
 etc...). Sin embargo, el proceso de conexión es un poco más complicado:
 
@@ -179,9 +191,11 @@ library("RJDBC")
 
 # Conexión a la base de datos con RJDBC:
 
-# 1. Creo un objeto tipo Driver (paso adicional).
+# 1. Creo un objeto tipo Driver (paso adicional). En classPath debemos poner la
+# ruta donde se encuentra el archivo sqljdbc4.jar que se encuentra en la carpeta
+# que acabamos de descargar.
 drv <- JDBC(driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver", 
-  classPath = "~/sqljdbc_4.0/enu/sqljdbc4.jar", identifier.quote="`")
+  classPath = "/Users/GreatDragonian/sqljdbc_6.0/enu/sqljdbc4.jar", identifier.quote="`")
 
 # 2. Obtengo el password del INFyS
 PASS_INFYS = Sys.getenv("PASS_INFYS")
