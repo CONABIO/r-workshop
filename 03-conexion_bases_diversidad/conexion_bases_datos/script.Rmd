@@ -1,5 +1,5 @@
 ---
-title: "Conexión a bases de datos con dplyr"
+title: "Conexión a bases de datos con r"
 author: "Fernando Pardo"
 date: "3 de febrero de 2016"
 output: html_document
@@ -122,8 +122,7 @@ datos_snib_ejemplo <- tbl(snib, "InformacionGeoportal") %>%
   collect()
 
 # Visualizando los datos
-datos_snib_ejemplo
-glimpse(datos_snib_ejemplo)  #función dentro del paquete dplyr.
+glimpse(datos_snib_ejemplo)
 
 datos_snib_38 <- tbl(snib, "InformacionGeoportal") %>%
   filter(proyecto == "038") %>%
@@ -170,10 +169,16 @@ ejemplo, obtén información acerca de algunas especies que te interesen.
 ## Conexión a una base de datos SQL Server u Oracle
 
 Para conectarnos a estas bases de datos, se necesita utilizar otro paquete. Aquí
-lo ejemplificaremos con __RJDBC__. Se necesita hacer una configuración previa para
-utilizar este paquete:
+lo ejemplificaremos con __RJDBC__.
 
-1. Descargar el driver de SQL Server [aquí:](http://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=11774). Descargar el archivo __sqljdbc_6.0.6629.101_enu.exe__ (Windows), o el
+### Instalación de RJDBC
+
+Se necesita hacer una configuración previa para
+utilizar este paquete con una base de datos SQL Server.
+
+1. Descargar el driver de SQL Server
+[aquí:](http://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=11774).
+Descargar el archivo __sqljdbc_6.0.6629.101_enu.exe__ (Windows), o el
 __sqljdbc_6.0.6629.101_enu.tar.gz__ (Mac OS/Linux).
 
 2. 
@@ -181,10 +186,16 @@ __sqljdbc_6.0.6629.101_enu.tar.gz__ (Mac OS/Linux).
     el archivo _jar_, porque será necesaria posteriormente.
     * Para Mac, abrir la terminal, mover el archivo a _home del usuario_, abrir la
     terminal y correr el comando: _tar -xf nombre_del_archivo_.
+    
+__Nota:__ Si a la hora de cargar el paquete __RJDBC__ en nuestra sesión de R, sale
+un error, es muy probable que se tenga que instalar __Java__. Para descargarlo,
+hacer click [aquí](https://www.java.com/es/download/)
 
-La información que se requiere para hacer la
-conexión es muy parecida (dirección del servidor, puerto, base de datos, usuario,
-etc...). Sin embargo, el proceso de conexión es un poco más complicado:
+### Conexión a una base de datos con RJDBC
+    
+La información que se requiere para hacer la conexión es muy parecida a la de dplyr
+(dirección del servidor, puerto, base de datos, usuario, etc...). Sin embargo,
+el proceso de conexión es un poco más complicado:
 
 ```{r}
 library("RJDBC")
@@ -249,6 +260,7 @@ head(conglomerados_estados_id)
 # estado por el nombre:
 conglomerados_estados <- conglomerados_estados_id %>%
   inner_join(estados, by = c("Estado" = "CveEstado"))
+head(conglomerados_estados)
 ```
 
 Para conectarnos a bases de datos Access, se puede utilizar el paquete
