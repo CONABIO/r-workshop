@@ -305,4 +305,91 @@ Este es el resultado final de este proceso. En R, es tan secillo escribir un ras
 
 writeRaster(D, filename="/home/jequihua/Documents/curso_r_conabio/diferencias_significativas.tif", format="GTiff", overwrite=TRUE)
 
-```
+``` 
+
+![Resultado final.](/home/jequihua/Documents/repositories/r-conabio/05-sig_sdm/sig/images/dif_stack.jpg)
+
+## Capas vectoriales, primeros pasos
+
+Una Capa vectorial es una estructura espacial conformada por unidades (puntos, líneas o polígonos), asociada a una tabla de datos. 
+
+La librería GDAL es una librería Open Source para leer y escribir formatos raster y vectoriales. El paquete rgdal es una interfaz a esta librería que permite la fácil lectura de Shape files en R.
+
+```{r}
+
+library("rgdal")
+
+puntos <- readOGR(dsn="/home/jequihua/Documents/curso_r_conabio/puntos.shp",layer="puntos")
+lineas <- readOGR(dsn="/home/jequihua/Documents/curso_r_conabio/lineas.shp",layer="lineas")
+poligonos <- readOGR(dsn="/home/jequihua/Documents/curso_r_conabio/poligonos.shp",layer="poligonos")
+
+par(mfrow=c(1,3))
+
+plot(puntos)
+plot(lineas)
+plot(poligonos)
+
+``` 
+
+Cargado un shape file en el espacio de trabajo de R, este se convierte en un data.frame espacial. Por lo que la mayoría de las funcionalidades disponibles para un data.frame aplican.
+
+```{r}
+
+# tipo de objeto
+class(puntos)
+class(lineas)
+class(poligonos)
+
+# cabeza de los datos
+head(puntos)
+head(lineas)
+head(poligonos)
+
+``` 
+
+Se debe notar que por como están programadas estas estructuras espaciales en R, todo supconjunto de un data.frame espacial es nuevamente un data.frame espacial y se pueden generar subconjuntos utilizando los mecanismos usuales para data.frames
+
+```{r}
+
+# elegimos el primer polígono
+poligono <- poligonos[1,]
+
+class(poligono)
+
+plot(poligono)
+
+``` 
+
+Como sucede con un data.frame usual se puede agregar una nueva columna (variable) a un data.frame espacial utilizando el signo "$".
+
+```{r}
+
+# agregamos al objetos poligonos la variable intensidad. Este objeto tiene 3 polígonos. Asignarémos un valor de intensidad = 0 al primer polígono, y un valor de intensidad = 2 a los siguientes 2. 
+poligonos$intensidad <- c(1,2,2)
+
+head(poligonos)
+
+colores <- c("red","blue")
+
+plot(poligonos,col=colores[poligonos$intensidad])
+
+``` 
+
+## Análisis de capas vectoriales usando R
+
+Existen numerosas librerías para hacer análisis de capas vectoriales de puntos, líneas y polígonos. Se incluye un documento donde se describen algunos de estos paquetes.
+
+Algo que es importante es entender cómo manipular distintas capas vectoriales simultáneamente, por lo que vale la pena leer las funciones disponibles en los paquetes más fundamentales: sp, maptools, raster, etc. 
+
+Por ejemplo, es trivial encontrar las intersecciones espaciales entre polígonos y puntos utilizando la función over() del paquete sp.
+
+```{r}
+
+overlay <- over(puntos,poligonos)
+
+overlay
+
+``` 
+
+La función over() está programada para manejar de manera distinta cada una de los casos que surgen de las combinaciones de puntos, líneas y polígonos. Es recomendable consultar la ayuda de la función para entender cada caso (?over). En el caso de puntos vs polígonos la salida tiene tantas filas como puntos hay de entrada (=11). Para cada fila de la salida se indica sobre qué polígono cae cada punto y cualquier otra variable que esté incluída en la tabla de datos de los polígonos (e.g. intensidad en este caso.)
+
