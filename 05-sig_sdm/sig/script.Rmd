@@ -151,12 +151,12 @@ Podemos multiplicar el raster en su totalidad por 2 y restarle la constante 1.
 
 ```{r}
 
-matriz_raster_x2_menos1 <- matriz_raster * 2 - 1
+matriz_raster_por2_menos1 <- matriz_raster * 2 - 1
 
-gplot(matriz_raster_x2_menos1) + geom_tile(aes(fill=values(matriz_raster_x2_menos1))) + 
+gplot(matriz_raster_por2_menos1) + geom_tile(aes(fill=values(matriz_raster_por2_menos1))) + 
                   scale_colour_brewer(palette="Blues")  +
                   coord_equal() + 
-                  geom_text(aes(label=sprintf("%02.0f",values(matriz_raster_x2_menos1))),color="white",size=5)
+                  geom_text(aes(label=sprintf("%02.0f",values(matriz_raster_por2_menos1))),color="white",size=5)
 ```
 
 Podemos reemplazar todos los píxeles del raster que cumplan la condición de ser mayores a 4 por 999. Esto se logra expresando la condición de manera análoga a como lo hicimos para matrices. Como un raster se puede ver como un vector, basta con meter la condición en una única dimensión
@@ -182,3 +182,127 @@ cellStats(matriz_raster,stat="mean")
 
 ```
 
+## Análisis de Rasters usando R
+
+Como se indicó se puede cargar prácticamente cualquier raster utilizando la función raster(). Muchas imágenes satelitales son en realidad multiespectrales, esto quiere decir que en vez de ser una sola matriz son varias apiladas. Por ejemplo las imágenes RapidEye son imágenes constan de 5 bandas (green,blue,red, red edge, near infrared). Estas imágenes en particular se deben cargar con la función brick() o stack(). Carguemos un recorte de imagen RapidEye localizada en el estado de Chiapas. Si se llama al objeto se desplegarán los metadatos del mismo:
+
+```{r}
+
+chiapas1 <- brick("/home/jequihua/Documents/curso_r_conabio/1crop.tif")
+
+chiapas1
+
+# visualizar las bandas RGB
+plotRGB(chiapas1,r=3,g=2,b=1)
+
+```
+
+Utilizando la función subset() podemos obtener una o más bandas de una imagen multiespectral. Por ejemplo podemos extraer las bandas red (VIS) y near infrared (NIR).
+
+```{r}
+
+VIS <- subset(chiapas1,subset=3)
+
+NIR <- subset(chiapas1,subset=5)
+
+par(mfrow=c(1,2))
+
+plot(VIS,main="VIS")
+plot(NIR,main="NIR")
+
+```
+
+Utilizando los mecanismos de algebra de mapas descritos en la sección anterior podemos trivialmente calcular el NDVI de esta imagen.
+
+$$
+\begin{aligned}
+NDVI := \frac{NIR-VIS}{NIR+VIS}
+\end{aligned}
+$$
+
+```{r}
+
+chiapas1_ndvi <- (NIR-VIS)/(NIR+VIS)
+
+plot(chiapas1_ndvi,main="NDVI")
+
+```
+
+Utilizando algebra de mapas y la función cellStats() podemos estandarizar esta imagen. Le restaremos su media y dividiremos esto sobre la desviación estándar de la misma.
+
+```{r}
+
+chiapas1_ndvi_st <- (chiapas1_ndvi-cellStats(chiapas1_ndvi,stat="mean"))/(cellStats(chiapas1_ndvi,stat="sd"))
+
+plot(chiapas1_ndvi_st,main="NDVI estandarizado")
+
+```
+
+Con base en el procedimiento anterior, tratemos de generar un ejercicio simple de detección de cambios. Tomemos una imagen RapidEye del mismo lugar pero tomada un año después que la que acabamos de trabajar. Llevemos a cabo el mismo procedimiento para obtener su NDVI estandarizado.
+
+```{r}
+
+chiapas2 <- brick("/home/jequihua/Documents/curso_r_conabio/2crop.tif")
+
+VIS <- subset(chiapas2,subset=3)
+
+NIR <- subset(chiapas2,subset=5)
+
+chiapas2_ndvi <- (NIR-VIS)/(NIR+VIS)
+
+chiapas2_ndvi_st <- (chiapas2_ndvi-cellStats(chiapas2_ndvi,stat="mean"))/(cellStats(chiapas2_ndvi,stat="sd"))
+
+plot(chiapas2_ndvi_st,main="NDVI estandarizado, 1 año después")
+
+```
+
+Ahora generaremos una imagen de diferencias, D, a partir de estas dos de NDVI.
+
+$$
+\begin{aligned}
+D = NDVI_1 - NDVI_2
+\end{aligned}
+$$
+
+
+```{r}
+
+D <- chiapas1_ndvi_st - chiapas2_ndvi_st
+
+plot(D,main="Diferencias en NDVI")
+
+```
+
+Aquí las diferencias positivas significan que el NDVI de la fecha 1 fue mayor al de la fecha 2. Diferencias negativas significan que el NDVI de la fecha 1 fue menor al de la fecha 2. Lo que dificulta el estudio de los cambios es que existe un continuo de magnitudes de diferencias. Naturalmente suponemos que diferencias de magnitud cercanas a $0$ deben considerarse no-cambios pero no es claro de qué magnitud debe ser una diferencia para poder tomarse como un cambio. Vamos a visualizar el histograma de las diferencias para darnos una idea de la distribución de estas.
+
+```{r}
+
+hist(D,breaks=100,main="Diferencias en NDVI",xlab="Diferencias",ylab="Conteos")
+
+```
+
+Parecería que la distribución de diferencias es aproximadamente normal. Se sabe que en una distribución normal, 95% de los valores se encuentran a 2 desviaciones estándar de su media. Tomando esto en cuenta definiremos como una diferencia significativa (cambio) a toda aquella que se encuentre a dos desviaciones estándar de la diferencia media. Podemos utilizar lo aprendido hasta ahora para condicionalmente reemplazar en la imagen de diferencias todo aquella que queremos descartar por ser una no-significativa.
+
+```{r}
+
+umbral_positivo <- cellStats(D,stat="mean")+ 2*cellStats(D,stat="sd")
+
+umbral_negativo <- cellStats(D,stat="mean")- 2*cellStats(D,stat="sd")
+
+# Recordatorio: se pueden combinar múltiples condiciones utilizando operadores lógicos
+#
+# El operador | se usa para expresar "o"
+#
+# El operador & se usa para expresar "y"
+
+D[(D>umbral_negativo) & (D<umbral_positivo)] <-NA 
+
+```
+
+Este es el resultado final de este proceso. En R, es tan secillo escribir un raster como leerlo. Para este propósito se utiliza la función writeRaster()
+
+```{r}
+
+writeRaster(D, filename="/home/jequihua/Documents/curso_r_conabio/diferencias_significativas.tif", format="GTiff", overwrite=TRUE)
+
+```
