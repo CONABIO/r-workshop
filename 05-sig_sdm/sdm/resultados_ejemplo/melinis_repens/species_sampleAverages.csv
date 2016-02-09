@@ -1,0 +1,11 @@
+Predictor variable,Categorical,Sample average
+X2013_1_EVI_drystd,false,392.3131548106006
+X2013_1_NDVI_drystd,false,658.9615376790365
+X2013_1_NDVI_perc65,false,5790.926733754083
+bio_02,false,14.21285351669063
+bio_06,false,8.260582699848223
+bio_13,false,50.62553556126821
+bio_17,false,34.95629820051414
+bio_19,false,68.37789203084833
+tree_cover_maximums,false,28.90786531845933
+tree_cover_means,false,20.38789771909681

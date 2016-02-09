@@ -138,7 +138,7 @@ serán nuestros insumos para modelar utilizando __Maxent__.
 coordinates(presencias) <-~ longitud + latitud
 
 # Leyendo un raster con la misma proyección que nuestros datos, para extraérsela
-raster_lat_lon <- raster("aux/lat_lon.tif")
+raster_lat_lon <- raster("auxiliar/lat_lon.tif")
 
 # Extrayéndole la proyección a nuestro raster anterior, y asignándosela a nuestros
 # datos de presencias. Si los datos no están en la misma proyección, se tendrán
@@ -212,7 +212,8 @@ estamos pasando a esta función son:
 en el raster (para no tomar en cuenta dos veces la misma información).
 * _path_: ruta donde queremos guardar las salidas de la función.
 * _args_: parámetros que se le pasan a la aplicación maxent.jar. Para mayor información,
-revisar la ayuda de la aplicación. Por lo pronto:
+revisar la ayuda de la aplicación (entrar a __maxent.jar__ y darle en el botón
+__help__). Por lo pronto:
     + _-P_ es un parámetro para que Maxent cree las curvas de respuesta de las
     variables ambientales, y se pueda ver su efecto (parcial) sobre la probabilidad
     predicha de condiciones favorables.
@@ -247,15 +248,18 @@ maxent_melrep <- maxent(
     brik,
     presencias_mex_lcc,
     removeDuplicates = TRUE,
-    path = "resultados/melinis_repens_cv",
+    path = "resultados/melinis_repens",
     args = c(
-      "-P",
+      "-P", 
       # se eliminó la validación cruzada
       "writebackgroundpredictions=true")
     )
 ```
 
 ## Utilizando el modelo Maxent para predecir
+
+Ya que entrenamos nuestro modelo final, es muy sencillo utilizarlo para predecir
+en el ladrillo que nos interesa, y guardar el resultado como un nuevo raster.
 
 ```{r}
 pred_melrep <- predict(maxent_melrep, brik,
@@ -267,4 +271,7 @@ plot(pred_melrep)
 title("SDM Melinis repens SNIB Mexico")
 ```
 
-#SDMTools
+Finalmente, existen otros paquetes como
+[SDMTools](https://cran.r-project.org/web/packages/SDMTools/SDMTools.pdf) o
+[pROC](https://cran.r-project.org/web/packages/pROC/pROC.pdf) que contienen
+funciones adicionales para sdm.
