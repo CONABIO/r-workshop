@@ -9,7 +9,18 @@ output: html_document
 
 El análisis espacial y espacio-temporal es una extensión natural a las capacidades de R. Existen múltiples paquetes para manipular y analizar datos espacio-temporales en R. En esta clase vamos a dar una introducción a esto.
 
-## matrices y data frames
+Primero que nada establezcamos el directorio de trabajo
+
+```{r setup}
+
+library("knitr")
+
+opts_knit$set(root.dir = "/Users/agutierrez/Documents/curso_r_conabio/")
+
+```
+
+
+## Matrices y data frames
 
 Recordando, una matriz es un arreglo bidimensional con una cierta cantidad de renglones y de columnas, por ejemplo un cuadrado de $3*3$ que contenga los números del 1 al 9
 
@@ -188,7 +199,7 @@ Como se indicó se puede cargar prácticamente cualquier raster utilizando la fu
 
 ```{r}
 
-chiapas1 <- brick("/home/jequihua/Documents/curso_r_conabio/1crop.tif")
+chiapas1 <- brick(paste0(getwd(),"/1crop.tif"))
 
 chiapas1
 
@@ -242,7 +253,7 @@ Con base en el procedimiento anterior, tratemos de generar un ejercicio simple d
 
 ```{r}
 
-chiapas2 <- brick("/home/jequihua/Documents/curso_r_conabio/2crop.tif")
+chiapas2 <- brick(paste0(getwd(),"/2crop.tif"))
 
 VIS <- subset(chiapas2,subset=3)
 
@@ -303,11 +314,35 @@ Este es el resultado final de este proceso. En R, es tan secillo escribir un ras
 
 ```{r}
 
-writeRaster(D, filename="/home/jequihua/Documents/curso_r_conabio/diferencias_significativas.tif", format="GTiff", overwrite=TRUE)
+writeRaster(D, filename=paste0(getwd(),"/diferencias_significativas.tif"), format="GTiff", overwrite=TRUE)
 
 ``` 
 
-![Resultado final.](/home/jequihua/Documents/repositories/r-conabio/05-sig_sdm/sig/images/dif_stack.jpg)
+![Resultado final.](/Users/agutierrez/Documents/repositories/r-conabio/05-sig_sdm/sig/images/dif_stack.jpg)
+
+El paquete raster tiene funciones dedicadas a manejar la proyección de las capas con las que se está trabajando. Supongamos que queremos visualizar este último resultado en Google Earth. ¿está en la proyección correcta?
+
+```{r}
+
+projection(D)
+
+``` 
+
+NO.
+
+```{r}
+
+D_reproj <- projectRaster(D,crs=CRS("+proj=longlat"))
+
+``` 
+
+Luego simplemente generamos un KML con la funcón KML()
+
+```{r}
+
+KML(D_reproj,paste0(getwd(),"/cambios_kml"),maxpixels=1000000,overwrite=TRUE)
+
+``` 
 
 ## Capas vectoriales, primeros pasos
 
@@ -319,9 +354,9 @@ La librería GDAL es una librería Open Source para leer y escribir formatos ras
 
 library("rgdal")
 
-puntos <- readOGR(dsn="/home/jequihua/Documents/curso_r_conabio/puntos.shp",layer="puntos")
-lineas <- readOGR(dsn="/home/jequihua/Documents/curso_r_conabio/lineas.shp",layer="lineas")
-poligonos <- readOGR(dsn="/home/jequihua/Documents/curso_r_conabio/poligonos.shp",layer="poligonos")
+puntos <- readOGR(dsn=paste0(getwd(),"/puntos.shp"),layer="puntos")
+lineas <- readOGR(dsn=paste0(getwd(),"/lineas.shp"),layer="lineas")
+poligonos <- readOGR(dsn=paste0(getwd(),"/poligonos.shp"),layer="poligonos")
 
 par(mfrow=c(1,3))
 
@@ -377,7 +412,7 @@ plot(poligonos,col=colores[poligonos$intensidad])
 
 ## Análisis de capas vectoriales usando R
 
-Existen numerosas librerías para hacer análisis de capas vectoriales de puntos, líneas y polígonos. Se incluye un documento donde se describen algunos de estos paquetes.
+Existen numerosas librerías para hacer análisis de capas vectoriales de puntos, líneas y polígonos.
 
 Algo que es importante es entender cómo manipular distintas capas vectoriales simultáneamente, por lo que vale la pena leer las funciones disponibles en los paquetes más fundamentales: sp, maptools, raster, etc. 
 
@@ -389,7 +424,216 @@ overlay <- over(puntos,poligonos)
 
 overlay
 
+plot(poligonos,col=colores[poligonos$intensidad])
+
+plot(puntos,add=TRUE)
+
+
 ``` 
 
-La función over() está programada para manejar de manera distinta cada una de los casos que surgen de las combinaciones de puntos, líneas y polígonos. Es recomendable consultar la ayuda de la función para entender cada caso (?over). En el caso de puntos vs polígonos la salida tiene tantas filas como puntos hay de entrada (=11). Para cada fila de la salida se indica sobre qué polígono cae cada punto y cualquier otra variable que esté incluída en la tabla de datos de los polígonos (e.g. intensidad en este caso.)
+La función over() está programada para manejar de manera distinta cada una de los casos que surgen de las combinaciones de puntos, líneas y polígonos. Es recomendable consultar la ayuda de la función para entender cada caso (?over). En el caso de puntos vs polígonos la salida tiene tantas filas como puntos hay de entrada (11). Para cada fila de la salida se indica sobre qué polígono cae cada punto y cualquier otra variable que esté incluída en la tabla de datos de los polígonos (e.g. intensidad en este caso.)
+
+Para determinar intersecciones complejas entre dos capas de polígonos es más conveniente utilizar el paquete raster.
+
+```{r}
+
+poligonos2 <- readOGR(dsn=paste0(getwd(),"/cruces.shp"),layer="cruces")
+
+plot(poligonos2)
+
+plot(poligonos,col=colores[poligonos$intensidad],add=TRUE)
+
+intersecciones <- poligonos + poligonos2
+
+data.frame(intersecciones)
+
+plot(intersecciones,col=blues9)
+
+``` 
+
+## Juntando todo
+
+La función extract() del paquete raster es una sumamente útil. Permite sobreponer un data.frame espacial sobre un raster y extraer los valores de píxeles sobre los que cae cada registro del data.frame espacial.
+
+Cuando el data.frame espacial es uno de puntos entonces cada punto cae exáctamente sobre 1 pixel por lo que la extracción es trivial.
+
+Si el data.frame espacial es, por ejemplo, uno de polígonos; entonces cada registro cae sobre un grupo de píxeles. En este caso, la función extract debe recibir una función para poder asociarle un valor a cada polígono. Por ejemplo, si se elige la funciòn promedio, cada polígono es asociado al promedio de píxeles que envuelve.
+
+```{r}
+
+# leamos un raster de altitud con resolución de 1 km
+altitud <- raster(paste0(getwd(),"/dem30_mean1000.tif"))
+
+plot(altitud)
+plot(poligonos,col=colores[poligonos$intensidad],add=TRUE)
+plot(puntos,add=TRUE)
+
+extraccion_puntos <- extract(altitud,puntos)
+
+# valor de altitud de cada punto
+extraccion_puntos
+
+extraccion_poligonos <- extract(altitud,poligonos,fun=mean,na.rm=TRUE)
+
+# valor de altitud promedio por polígono
+extraccion_poligonos
+
+``` 
+
+Podemos combinar múltiples funciones para lograr objetivos muy específicos. Por ejemplo, supongamos que queremos cortar el raster de altitud con base en nuestro shape de polígonos.
+
+
+```{r}
+
+ 
+extShape <- extent(poligonos)
+img <- crop(altitud, extShape, snap='out')
+img.NA <- setValues(img, NA)
+img.mask <- rasterize(poligonos, img.NA)
+img.crop <- mask(x=img, mask=img.mask)
+
+plot(img.crop,main="Altitud en polígonos")
+
+``` 
+
+Ahora llevaremos a cabo un ejercicio en el que usaremos varias distintas funcionalidades de R para generar una regionalización del país de manera automatizada.
+
+Tomemos el raster altitud como base.
+
+Vamos a inicializar un raster multiespectral vacío y luego asignarle el raster de altitud como primera banda.
+
+```{r}
+
+# raster multiespectral vacío
+brik <- brick()
+
+# asignemos altitud como primera banda
+brik <- addLayer(brik,altitud)
+
+```
+
+El raster multiespectral brik, hereda los metadatos de el raster altitud. Si queremos introducirle más bandas, estas tienen que compartir exactamente los mismos metadatos. Introduzcamos las variables % vegetacion boscosa, % vegetación no-boscosa, % de no-vegetación, temperatura máxima promedio, temperatura mínima promedio y precipitación promedio.
+
+```{r}
+
+v_boscosa <- raster(paste0(getwd(),"/MOD44B_2014-03-06.Percent_Tree_Cover.tif"))
+v_noboscosa <- raster(paste0(getwd(),"/MOD44B_2014-03-06.Percent_NonTree_Vegetation.tif"))
+v_no <- raster(paste0(getwd(),"/MOD44B_2014-03-06.Percent_NonVegetated.tif"))
+
+# plot v_boscosa
+plot(v_boscosa,main="% vegetación boscosa")
+
+# ¿hay un match entre los metadatos de estas capas y el raster altitud?
+projection(v_boscosa)==projection(altitud)
+extent(v_boscosa)==extent(altitud)
+res(v_boscosa)==res(altitud)
+
+# resolución de v_boscosa?
+res(v_boscosa)
+
+```
+
+Todo está harmonizado excepto la resolución de los rasters. Las tres capas de vegetación anteriores están generadas con base en imágenes modis de 250 m. Sabemos que nuestro raster de altitud tiene una resolución de 1000 m. Agreguemos estas capas por un factor de 4 con base en la función promedio. También observamos que estas capas se extienden más allá de la delimitación oficial de México. Usaremos el raster altitud para eliminar todo aquello que no corresponda con México. Luego podremos agregar las capas de vegetación como bandas nuevas a nuestro raster multiespectral.
+
+```{r}
+
+# agregación factor *4 con base en función promedio
+v_boscosa <- aggregate(v_boscosa,fact=4,fun=mean,na.rm=TRUE)
+v_noboscosa <- aggregate(v_noboscosa,fact=4,fun=mean,na.rm=TRUE)
+v_no <- aggregate(v_no,fact=4,fun=mean,na.rm=TRUE)
+
+# filtrado de capas: si es NA en altitud que sea NA en capas de vegetación
+v_boscosa[is.na(altitud)]<-NA
+v_noboscosa[is.na(altitud)]<-NA
+v_no[is.na(altitud)]<-NA
+
+# Introduzcamos estas capas a nuestro raster multiespectral
+brik <- addLayer(brik,v_boscosa)
+brik <- addLayer(brik,v_noboscosa)
+brik <- addLayer(brik,v_no)
+
+dim(brik)
+
+```
+
+Ahora simplemente agregaremos las capas que faltan al raster multiespectral: temperatura máxima promedio, temperatura mínima promedio y precipitación promedio
+
+```{r}
+
+
+# Agregamos las bandas que faltan
+brik <- addLayer(brik,
+                 raster(paste0(getwd(),"/temp_max.tif")))
+
+brik <- addLayer(brik,
+                 raster(paste0(getwd(),"/temp_min.tif")))
+
+brik <- addLayer(brik,
+                 raster(paste0(getwd(),"/precipitacion.tif")))
+
+
+```
+
+Empezamos discutiendo matrices y data.frames. Los data.frames son estructuras sumamente apropiadas para llevar a cabo análisis. Vamos a generar un data.frame a partir de nuestro raster multiespectral. Cada fila correspondrá a un pixel. Cada banda se hará una columna (variable), además de las coordenadas x, y. 
+
+```{r}
+
+# tabla de datos
+tabla_datos <- rasterToPoints(brik)
+
+# descartemos las filas no completas
+tabla_datos_clean <- tabla_datos[complete.cases(tabla_datos),]
+
+head(tabla_datos_clean)
+
+```
+
+Es evidente que estas variables deben estar correlacionadas. Generemos un análisis de componentes principales sobre estas variables sin tomar en cuenta las coordenadas.
+
+```{r}
+
+# cálculo de componentes principales
+componentes <- prcomp(tabla_datos_clean[,2:9],center=TRUE,scale. =TRUE)
+
+# varianza explicada
+summary(componentes)
+
+```
+
+Ahora utilicemos 4 componentes principales para llevar a cabo un ejercicio de clustering usando k-medias
+
+```{r}
+
+# k-medias, k=10
+kmedias <- kmeans(componentes$x[,1:4],centers=10,iter.max=50)
+
+```
+
+El resultado del clustering se lo podemos asociar a las coordenadas de nuestra matriz inicial. Luego convertir esta tabla en un objeto espacial y luego un raster.
+
+```{r}
+
+# clustering result
+clustered_data <- data.frame(x=tabla_datos_clean[,1],
+                             y=tabla_datos_clean[,2],
+                             clust=kmedias$cluster)
+
+# convertir esta tabla en un objeto espacial
+coordinates(clustered_data)=~x+y
+gridded(clustered_data)=TRUE
+clustered_data<-raster(clustered_data)
+projection(clustered_data)<-projection(altitud)
+
+```
+
+Finalmente podemos convertir este raster en una capa vectorial y guardarla en el disco duro.
+
+```{r}
+
+poligonos_clusters <- rasterToPolygons(clustered_data,n=4,dissolve=TRUE)
+
+writeOGR(poligonos_clusters,paste0(getwd(),"/regionalizacion.shp"),
+                        "regionalizacion",driver="ESRI Shapefile")
+
+```
 
